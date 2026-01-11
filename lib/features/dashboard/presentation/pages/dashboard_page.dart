@@ -9,6 +9,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_datetime.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../service_report/presentation/pages/service_report_page.dart';
 import '../../../visits/data/models/visit_model.dart';
 import 'profile_page.dart';
 import 'visit_history_page.dart';
@@ -290,30 +291,60 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const SizedBox(height: 20),
 
-              // End Visit Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    _showEndVisitDialog(context, activeVisit);
-                  },
-                  icon: const Icon(Icons.stop, size: 24),
-                  label: const Text(
-                    'End Visit',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+              // Action Buttons Row
+              Row(
+                children: [
+                  // Service Report Button
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.pushNamed(context, ServiceReportPage.routeName);
+                      },
+                      icon: const Icon(Icons.description, size: 20),
+                      label: const Text(
+                        'Service Report',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: const BorderSide(color: Colors.white, width: 2),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppTheme.error,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  const SizedBox(width: 12),
+
+                  // End Visit Button
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        _showEndVisitDialog(context, activeVisit);
+                      },
+                      icon: const Icon(Icons.stop, size: 20),
+                      label: const Text(
+                        'End Visit',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppTheme.error,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
