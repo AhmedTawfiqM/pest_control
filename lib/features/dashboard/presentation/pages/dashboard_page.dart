@@ -80,14 +80,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Active Visit or Start Visit Button
-                if (activeVisit != null)
-                  _buildActiveVisitCard(activeVisit)
-                else
-                  _buildStartVisitButton(),
-
-                const SizedBox(height: 16),
-
                 // Visit History Button
                 OutlinedButton.icon(
                   onPressed: () {
@@ -100,38 +92,18 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ),
 
-                const Spacer(),
+                const SizedBox(height: 16),
 
-                // Quick Stats (Placeholder)
-                Card(
-                  color: Colors.green[50],
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildStatColumn(
-                          context,
-                          'Today',
-                          '0',
-                          Icons.today,
-                        ),
-                        _buildStatColumn(
-                          context,
-                          'This Week',
-                          '0',
-                          Icons.calendar_today_outlined,
-                        ),
-                        _buildStatColumn(
-                          context,
-                          'Total',
-                          '0',
-                          Icons.assessment,
-                        ),
-                      ],
+                // Active Visit or Start Visit Button
+                if (activeVisit != null)
+                  _buildActiveVisitCard(activeVisit)
+                else
+                  Expanded(
+                    child: Center(
+                      child: _buildStartVisitButton(),
                     ),
                   ),
-                ),
+
               ],
             ),
           );
@@ -141,212 +113,277 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildStartVisitButton() {
-    return ElevatedButton.icon(
-      onPressed: () {
-        Navigator.pushNamed(context, VisitSetupPage.routeName);
-      },
-      icon: const Icon(Icons.play_arrow, size: 28),
-      label: const Text(
-        'Start New Visit',
-        style: TextStyle(fontSize: 18),
-      ),
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryGreen.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.add_location_alt,
+            size: 64,
+            color: AppTheme.primaryGreen,
+          ),
+        ),
+        const SizedBox(height: 24),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.pushNamed(context, VisitSetupPage.routeName);
+          },
+          icon: const Icon(Icons.play_arrow, size: 28),
+          label: const Text(
+            'Start New Visit',
+            style: TextStyle(fontSize: 18),
+          ),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildActiveVisitCard(ActiveVisitModel activeVisit) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.success,
-              AppTheme.success.withValues(alpha: 0.8),
-            ],
+    return ValueListenableBuilder(
+      valueListenable: Hive.box<VisitModel>(AppConstants.visitBox).listenable(),
+      builder: (context, Box<VisitModel> visitBox, _) {
+        final visit = visitBox.get(activeVisit.visitId);
+        final hasReport = visit?.serviceReportId != null;
+
+        return Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Row
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.timer,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'Visit In Progress',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'ACTIVE',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppTheme.success,
+                  AppTheme.success.withValues(alpha: 0.8),
                 ],
               ),
-              const SizedBox(height: 20),
-
-              // Live Timer
-              StreamBuilder(
-                stream: Stream.periodic(const Duration(seconds: 1)),
-                builder: (context, snapshot) {
-                  final duration = AppDateTime.durationFromNowUtc(activeVisit.startTimeUtc);
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.access_time,
-                          color: Colors.white,
-                          size: 32,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Row
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          AppDateTime.formatDuration(duration),
-                          style: const TextStyle(
-                            fontSize: 36,
+                        child: const Icon(
+                          Icons.timer,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Visit In Progress',
+                          style: TextStyle(
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            fontFeatures: [FontFeature.tabularFigures()],
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-
-              // Visit Details
-              _buildDetailItem(
-                Icons.business,
-                'Customer',
-                activeVisit.customerName,
-              ),
-              const SizedBox(height: 12),
-              _buildDetailItem(
-                Icons.assignment,
-                'Project',
-                activeVisit.projectName,
-              ),
-              const SizedBox(height: 12),
-              _buildDetailItem(
-                Icons.calendar_today,
-                'Started',
-                AppDateTime.format(
-                  activeVisit.startTimeLocal,
-                  AppDateTimeFormat.shortDateTime,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Action Buttons Row
-              Row(
-                children: [
-                  // Service Report Button
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.pushNamed(context, ServiceReportPage.routeName);
-                      },
-                      icon: const Icon(Icons.description, size: 20),
-                      label: const Text(
-                        'Service Report',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'ACTIVE',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white, width: 2),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Live Timer
+                  StreamBuilder(
+                    stream: Stream.periodic(const Duration(seconds: 1)),
+                    builder: (context, snapshot) {
+                      final duration = AppDateTime.durationFromNowUtc(activeVisit.startTimeUtc);
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                      ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.access_time,
+                              color: Colors.white,
+                              size: 32,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              AppDateTime.formatDuration(duration),
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontFeatures: [FontFeature.tabularFigures()],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Visit Details
+                  _buildDetailItem(
+                    Icons.business,
+                    'Customer',
+                    activeVisit.customerName,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDetailItem(
+                    Icons.assignment,
+                    'Project',
+                    activeVisit.projectName,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDetailItem(
+                    Icons.calendar_today,
+                    'Started',
+                    AppDateTime.format(
+                      activeVisit.startTimeLocal,
+                      AppDateTimeFormat.shortDateTime,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(height: 20),
 
-                  // End Visit Button
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        _showEndVisitDialog(context, activeVisit);
-                      },
-                      icon: const Icon(Icons.stop, size: 20),
-                      label: const Text(
-                        'End Visit',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                  // Action Buttons Row
+                  Row(
+                    children: [
+                      // Service Report Button or Report Added Component
+                      Expanded(
+                        child: hasReport
+                            ? _buildReportAddedComponent()
+                            : OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, ServiceReportPage.routeName);
+                                },
+                                icon: const Icon(Icons.description, size: 20),
+                                label: const Text(
+                                  'Service Report',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  side: const BorderSide(color: Colors.white, width: 2),
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // End Visit Button
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _showEndVisitDialog(context, activeVisit);
+                          },
+                          icon: const Icon(Icons.stop, size: 20),
+                          label: const Text(
+                            'End Visit',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: AppTheme.error,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppTheme.error,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
+        );
+      },
+    );
+  }
+
+  Widget _buildReportAddedComponent() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white, width: 2),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.check,
+              size: 16,
+              color: AppTheme.success,
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'Report Added',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -387,26 +424,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildStatColumn(
-      BuildContext context, String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-        ),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
-    );
-  }
 
   void _showEndVisitDialog(BuildContext context, ActiveVisitModel activeVisit) {
     final activeVisitBox = Hive.box<ActiveVisitModel>(AppConstants.activeVisitBox);
