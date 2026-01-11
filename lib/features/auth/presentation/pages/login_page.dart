@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../bloc/auth_bloc.dart';
@@ -199,19 +200,53 @@ class _LoginPageState extends State<LoginPage> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                              'Email: admin@pestcontrol.com',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.blue[900],
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Email: admin@pestcontrol.com',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.blue[900],
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.copy, size: 16),
+                                  onPressed: () {
+                                    final email = 'admin@pestcontrol.com';
+                                    Clipboard.setData(ClipboardData(text: email));
+                                  },
+                                  padding: EdgeInsets.zero,
+                                  constraints: BoxConstraints(),
+                                  color: Colors.blue[700],
+                                ),
+                              ],
                             ),
-                            Text(
-                              'Password: password123',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.blue[900],
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Password: password123',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.blue[900],
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.copy, size: 16),
+                                  onPressed: () {
+                                    final password = 'password123';
+                                    Clipboard.setData(ClipboardData(text: password));
+                                  },
+                                  padding: EdgeInsets.zero,
+                                  constraints: BoxConstraints(),
+                                  color: Colors.blue[700],
+                                ),
+                              ],
                             ),
                           ],
                         ),
