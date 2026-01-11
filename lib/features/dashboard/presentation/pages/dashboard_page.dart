@@ -1,20 +1,18 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:uuid/uuid.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/models/active_visit_model.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_datetime.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
-import '../../../service_report/presentation/pages/service_report_page.dart';
 import '../../../visits/data/models/visit_model.dart';
 import 'profile_page.dart';
 import 'visit_history_page.dart';
 import '../../../visits/presentation/pages/visit_setup_page.dart';
 import '../../../visits/presentation/pages/team_selection_page.dart';
+import '../../../service_report/presentation/pages/service_report_page.dart';
 
 class DashboardPage extends StatefulWidget {
   static const String routeName = '/dashboard';
@@ -475,31 +473,29 @@ class _DashboardPageState extends State<DashboardPage> {
             onPressed: () async {
               Navigator.pop(dialogContext);
 
-              // Get supervisor ID from auth state
-              final authState = context.read<AuthBloc>().state;
-              String? supervisorId;
-              if (authState is AuthAuthenticated) {
-                supervisorId = authState.supervisor.id;
+              // Update visit in database
+              final visitBox = Hive.box<VisitModel>(AppConstants.visitBox);
+              final existingVisit = visitBox.get(activeVisit.visitId);
+
+              if (existingVisit == null) {
+                throw Exception('Visit not found in database');
               }
 
-              // Save visit to database
-              final visitBox = Hive.box<VisitModel>(AppConstants.visitBox);
               final endTimeUtc = AppDateTime.nowUtc();
-              final uuid = const Uuid();
 
               final completedVisit = VisitModel(
-                id: uuid.v4(),
-                supervisorId: supervisorId ?? 'UNKNOWN',
-                customerId: activeVisit.customerId,
-                projectId: activeVisit.projectId,
-                date: activeVisit.startTimeLocal,
-                startTime: activeVisit.startTimeLocal,
+                id: existingVisit.id,
+                supervisorId: existingVisit.supervisorId,
+                customerId: existingVisit.customerId,
+                projectId: existingVisit.projectId,
+                date: existingVisit.date,
+                startTime: existingVisit.startTime,
                 endTime: endTimeUtc.toLocal(),
                 teamMemberIds: [], // Will be filled in team selection screen
-                serviceReportId: null,
+                serviceReportId: existingVisit.serviceReportId,
               );
 
-              await visitBox.add(completedVisit);
+              await visitBox.put(activeVisit.visitId, completedVisit);
 
               // Clear active visit from Hive
               await activeVisitBox.delete(AppConstants.activeVisitKey);

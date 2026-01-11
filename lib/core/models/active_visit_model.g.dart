@@ -17,27 +17,30 @@ class ActiveVisitModelAdapter extends TypeAdapter<ActiveVisitModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ActiveVisitModel(
-      customerId: fields[0] as String,
-      projectId: fields[1] as String,
-      customerName: fields[2] as String,
-      projectName: fields[3] as String,
-      startTimeUtc: fields[4] as DateTime,
+      visitId: fields[0] as String,
+      customerId: fields[1] as String,
+      projectId: fields[2] as String,
+      customerName: fields[3] as String,
+      projectName: fields[4] as String,
+      startTimeUtc: fields[5] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, ActiveVisitModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
-      ..write(obj.customerId)
+      ..write(obj.visitId)
       ..writeByte(1)
-      ..write(obj.projectId)
+      ..write(obj.customerId)
       ..writeByte(2)
-      ..write(obj.customerName)
+      ..write(obj.projectId)
       ..writeByte(3)
-      ..write(obj.projectName)
+      ..write(obj.customerName)
       ..writeByte(4)
+      ..write(obj.projectName)
+      ..writeByte(5)
       ..write(obj.startTimeUtc);
   }
 

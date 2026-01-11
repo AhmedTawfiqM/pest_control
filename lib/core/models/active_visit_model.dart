@@ -5,21 +5,25 @@ part 'active_visit_model.g.dart';
 @HiveType(typeId: 10)
 class ActiveVisitModel {
   @HiveField(0)
-  final String customerId;
+  final String visitId;
 
   @HiveField(1)
-  final String projectId;
+  final String customerId;
 
   @HiveField(2)
-  final String customerName;
+  final String projectId;
 
   @HiveField(3)
-  final String projectName;
+  final String customerName;
 
   @HiveField(4)
+  final String projectName;
+
+  @HiveField(5)
   final DateTime startTimeUtc;
 
   const ActiveVisitModel({
+    required this.visitId,
     required this.customerId,
     required this.projectId,
     required this.customerName,
@@ -38,6 +42,7 @@ class ActiveVisitModel {
   }
 
   ActiveVisitModel copyWith({
+    String? visitId,
     String? customerId,
     String? projectId,
     String? customerName,
@@ -45,6 +50,7 @@ class ActiveVisitModel {
     DateTime? startTimeUtc,
   }) {
     return ActiveVisitModel(
+      visitId: visitId ?? this.visitId,
       customerId: customerId ?? this.customerId,
       projectId: projectId ?? this.projectId,
       customerName: customerName ?? this.customerName,

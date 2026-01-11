@@ -35,6 +35,7 @@ class DatabaseService {
     await Hive.openBox<PestModel>(AppConstants.pestBox);
     await Hive.openBox<ChemicalModel>(AppConstants.chemicalBox);
     await Hive.openBox<VisitModel>(AppConstants.visitBox);
+    await Hive.openBox<ServiceReportModel>(AppConstants.serviceReportBox);
     await Hive.openBox<ActiveVisitModel>(AppConstants.activeVisitBox);
     await Hive.openBox(AppConstants.appSettingsBox);
   }

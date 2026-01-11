@@ -7,6 +7,7 @@ class AppConstants {
   static const String pestBox = 'pests';
   static const String chemicalBox = 'chemicals';
   static const String visitBox = 'visits';
+  static const String serviceReportBox = 'service_reports';
   static const String appSettingsBox = 'app_settings';
   static const String activeVisitBox = 'active_visit';
 

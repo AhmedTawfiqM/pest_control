@@ -141,12 +141,32 @@ class VisitBloc extends Bloc<VisitEvent, VisitState> {
       emit(VisitLoading());
 
       try {
+        // Create visit in database first
+        final visitId = uuid.v4();
+        final startTimeUtc = AppDateTime.nowUtc();
+
+        final visit = VisitModel(
+          id: visitId,
+          supervisorId: event.supervisorId,
+          customerId: currentState.selectedCustomer!.id,
+          projectId: currentState.selectedProject!.id,
+          date: startTimeUtc.toLocal(),
+          startTime: startTimeUtc.toLocal(),
+          endTime: null,
+          teamMemberIds: [],
+          serviceReportId: null,
+        );
+
+        await visitBox.put(visitId, visit);
+
+        // Create active visit reference with visitId
         final activeVisit = ActiveVisitModel(
+          visitId: visitId,
           customerId: currentState.selectedCustomer!.id,
           projectId: currentState.selectedProject!.id,
           customerName: currentState.selectedCustomer!.name,
           projectName: currentState.selectedProject!.name,
-          startTimeUtc: AppDateTime.nowUtc(),
+          startTimeUtc: startTimeUtc,
         );
 
         await activeVisitBox.put(AppConstants.activeVisitKey, activeVisit);
@@ -172,21 +192,30 @@ class VisitBloc extends Bloc<VisitEvent, VisitState> {
         return;
       }
 
+      // Get existing visit from database
+      final existingVisit = visitBox.get(activeVisit.visitId);
+
+      if (existingVisit == null) {
+        emit(VisitErrorState(message: 'Visit not found in database'));
+        return;
+      }
+
       final endTimeUtc = AppDateTime.nowUtc();
 
+      // Update existing visit with end time
       final completedVisit = VisitModel(
-        id: uuid.v4(),
-        supervisorId: event.supervisorId,
-        customerId: activeVisit.customerId,
-        projectId: activeVisit.projectId,
-        date: activeVisit.startTimeLocal,
-        startTime: activeVisit.startTimeLocal,
+        id: existingVisit.id,
+        supervisorId: existingVisit.supervisorId,
+        customerId: existingVisit.customerId,
+        projectId: existingVisit.projectId,
+        date: existingVisit.date,
+        startTime: existingVisit.startTime,
         endTime: endTimeUtc.toLocal(),
-        teamMemberIds: [],
-        serviceReportId: null,
+        teamMemberIds: existingVisit.teamMemberIds,
+        serviceReportId: existingVisit.serviceReportId,
       );
 
-      await visitBox.add(completedVisit);
+      await visitBox.put(activeVisit.visitId, completedVisit);
       await activeVisitBox.delete(AppConstants.activeVisitKey);
 
       emit(VisitEndedState(visit: completedVisit));

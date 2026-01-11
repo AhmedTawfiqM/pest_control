@@ -50,15 +50,15 @@ class SearchProjectsEvent extends VisitEvent {
 }
 
 class StartVisitEvent extends VisitEvent {
-  const StartVisitEvent();
-}
-
-class EndVisitEvent extends VisitEvent {
   final String supervisorId;
 
-  const EndVisitEvent({required this.supervisorId});
+  const StartVisitEvent({required this.supervisorId});
 
   @override
   List<Object> get props => [supervisorId];
+}
+
+class EndVisitEvent extends VisitEvent {
+  const EndVisitEvent();
 }
 

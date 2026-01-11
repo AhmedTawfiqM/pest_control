@@ -783,22 +783,17 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
         }
       }
 
-      // Find the latest visit for this active visit
+      // Get visit directly by ID from active visit
       final visitBox = Hive.box<VisitModel>(AppConstants.visitBox);
-      VisitModel? targetVisit;
-
-      for (int i = visitBox.length - 1; i >= 0; i--) {
-        final visit = visitBox.getAt(i);
-        if (visit?.customerId == activeVisit.customerId &&
-            visit?.projectId == activeVisit.projectId &&
-            visit?.serviceReportId == null) {
-          targetVisit = visit;
-          break;
-        }
-      }
+      final targetVisit = visitBox.get(activeVisit.visitId);
 
       if (targetVisit == null) {
-        throw Exception('No matching visit found');
+        throw Exception('Visit not found in database. Please ensure the visit was started correctly.');
+      }
+
+      // Check if visit already has a report
+      if (targetVisit.serviceReportId != null) {
+        throw Exception('This visit already has a service report');
       }
 
       // Create service report
@@ -813,9 +808,9 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
         createdAt: DateTime.now(),
       );
 
-      // TODO: Save service report to a dedicated Hive box for future retrieval
-      // For now, we store the report ID in the visit record
-      debugPrint('Service Report Created: ${serviceReport.id}');
+      // Save service report to Hive
+      final serviceReportBox = Hive.box<ServiceReportModel>(AppConstants.serviceReportBox);
+      await serviceReportBox.put(reportId, serviceReport);
 
       final updatedVisit = VisitModel(
         id: targetVisit.id,
@@ -829,14 +824,8 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
         serviceReportId: reportId,
       );
 
-      // Update visit in database
-      for (int i = 0; i < visitBox.length; i++) {
-        final visit = visitBox.getAt(i);
-        if (visit?.id == targetVisit.id) {
-          await visitBox.putAt(i, updatedVisit);
-          break;
-        }
-      }
+      // Update visit in database directly by key
+      await visitBox.put(targetVisit.id, updatedVisit);
 
       // Show success and navigate back
       if (mounted) {

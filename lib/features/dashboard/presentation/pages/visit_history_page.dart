@@ -7,6 +7,7 @@ import '../../../visits/data/models/visit_model.dart';
 import '../../../dashboard/data/models/customer_model.dart';
 import '../../../dashboard/data/models/project_model.dart';
 import '../../../dashboard/data/models/team_member_model.dart';
+import '../../../service_report/presentation/pages/service_report_details_page.dart';
 
 class VisitHistoryPage extends StatelessWidget {
   static const String routeName = '/visit-history';
@@ -210,14 +211,9 @@ class VisitHistoryPage extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          _showVisitDetails(context, visit, customerName, projectName);
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header Row
@@ -411,8 +407,57 @@ class VisitHistoryPage extends StatelessWidget {
                   ],
                 ),
               ),
-            ],
-          ),
+              const SizedBox(height: 16),
+
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        _showVisitDetails(context, visit, customerName, projectName);
+                      },
+                      icon: const Icon(Icons.visibility, size: 16),
+                      label: const Text(
+                        'View Details',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.primaryGreen,
+                        side: const BorderSide(color: AppTheme.primaryGreen),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: visit.serviceReportId != null
+                          ? () {
+                              _showServiceReportSheet(context, visit);
+                            }
+                          : null,
+                      icon: const Icon(Icons.description, size: 16),
+                      label: const Text(
+                        'Open Report',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryGreen,
+                        disabledBackgroundColor: Colors.grey[300],
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -633,6 +678,15 @@ class VisitHistoryPage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  void _showServiceReportSheet(BuildContext context, VisitModel visit) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ServiceReportDetailsPage(visit: visit),
     );
   }
 

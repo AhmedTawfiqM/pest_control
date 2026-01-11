@@ -539,13 +539,41 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
                             final selectedCustomer = customers.firstWhere((c) => c.id == selectedCustomerId);
                             final selectedProject = projects.firstWhere((p) => p.id == selectedProjectId);
 
-                            // Save active visit to Hive with UTC time
+                            // Get supervisor ID from auth state
+                            final authState = context.read<AuthBloc>().state;
+                            String? supervisorId;
+                            if (authState is AuthAuthenticated) {
+                              supervisorId = authState.supervisor.id;
+                            }
+
+                            // Create visit in database
+                            final visitBox = Hive.box<VisitModel>(AppConstants.visitBox);
+                            final uuid = const Uuid();
+                            final visitId = uuid.v4();
+                            final startTimeUtc = AppDateTime.nowUtc();
+
+                            final visit = VisitModel(
+                              id: visitId,
+                              supervisorId: supervisorId ?? 'UNKNOWN',
+                              customerId: selectedCustomer.id,
+                              projectId: selectedProject.id,
+                              date: startTimeUtc.toLocal(),
+                              startTime: startTimeUtc.toLocal(),
+                              endTime: null,
+                              teamMemberIds: [],
+                              serviceReportId: null,
+                            );
+
+                            await visitBox.put(visitId, visit);
+
+                            // Save active visit to Hive with UTC time and visitId
                             final newVisit = ActiveVisitModel(
+                              visitId: visitId,
                               customerId: selectedCustomer.id,
                               projectId: selectedProject.id,
                               customerName: selectedCustomer.name,
                               projectName: selectedProject.name,
-                              startTimeUtc: AppDateTime.nowUtc(), // Store as UTC
+                              startTimeUtc: startTimeUtc,
                             );
 
                             await activeVisitBox.put(AppConstants.activeVisitKey, newVisit);
@@ -632,24 +660,29 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
                 supervisorId = authState.supervisor.id;
               }
 
-              // Save visit to database
+              // Update visit in database
               final visitBox = Hive.box<VisitModel>(AppConstants.visitBox);
+              final existingVisit = visitBox.get(activeVisit.visitId);
+
+              if (existingVisit == null) {
+                throw Exception('Visit not found in database');
+              }
+
               final endTimeUtc = AppDateTime.nowUtc();
-              final uuid = const Uuid();
 
               final completedVisit = VisitModel(
-                id: uuid.v4(),
-                supervisorId: supervisorId ?? 'UNKNOWN',
-                customerId: activeVisit.customerId,
-                projectId: activeVisit.projectId,
-                date: activeVisit.startTimeLocal,
-                startTime: activeVisit.startTimeLocal,
+                id: existingVisit.id,
+                supervisorId: existingVisit.supervisorId,
+                customerId: existingVisit.customerId,
+                projectId: existingVisit.projectId,
+                date: existingVisit.date,
+                startTime: existingVisit.startTime,
                 endTime: endTimeUtc.toLocal(),
                 teamMemberIds: [], // Will be filled in team selection
-                serviceReportId: null,
+                serviceReportId: existingVisit.serviceReportId,
               );
 
-              await visitBox.add(completedVisit);
+              await visitBox.put(activeVisit.visitId, completedVisit);
 
               // Clear active visit from Hive
               await activeVisitBox.delete(AppConstants.activeVisitKey);
