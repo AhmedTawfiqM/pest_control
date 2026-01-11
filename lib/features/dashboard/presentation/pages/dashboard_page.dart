@@ -13,6 +13,7 @@ import '../../../visits/data/models/visit_model.dart';
 import 'profile_page.dart';
 import 'visit_history_page.dart';
 import '../../../visits/presentation/pages/visit_setup_page.dart';
+import '../../../visits/presentation/pages/team_selection_page.dart';
 
 class DashboardPage extends StatefulWidget {
   static const String routeName = '/dashboard';
@@ -463,7 +464,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 date: activeVisit.startTimeLocal,
                 startTime: activeVisit.startTimeLocal,
                 endTime: endTimeUtc.toLocal(),
-                teamMemberIds: [], // TODO: Add team member selection
+                teamMemberIds: [], // Will be filled in team selection screen
                 serviceReportId: null,
               );
 
@@ -475,13 +476,18 @@ class _DashboardPageState extends State<DashboardPage> {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Visit ended and saved successfully!'),
+                    content: Text('Visit ended successfully! Please select team members.'),
                     backgroundColor: AppTheme.success,
                   ),
                 );
-              }
 
-              // TODO: Navigate to team selection screen for future enhancement
+                // Navigate to team selection screen
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => TeamSelectionPage(visit: completedVisit),
+                  ),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.error,

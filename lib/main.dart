@@ -22,6 +22,7 @@ import 'features/dashboard/presentation/pages/dashboard_page.dart';
 import 'features/dashboard/presentation/pages/profile_page.dart';
 import 'features/dashboard/presentation/pages/visit_history_page.dart';
 import 'features/visits/presentation/pages/visit_setup_page.dart';
+import 'features/visits/presentation/pages/team_selection_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

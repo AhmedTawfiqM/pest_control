@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/app_datetime.dart';
@@ -7,6 +9,10 @@ import '../../../../core/utils/debouncer.dart';
 import '../../../../core/models/active_visit_model.dart';
 import '../../../dashboard/data/models/customer_model.dart';
 import '../../../dashboard/data/models/project_model.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../data/models/visit_model.dart';
+import 'team_selection_page.dart';
 
 class VisitSetupPage extends StatefulWidget {
   static const String routeName = '/visit-setup';
@@ -616,6 +622,35 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
             onPressed: () async {
               Navigator.pop(dialogContext);
 
+              final activeVisit = activeVisitBox.get(AppConstants.activeVisitKey);
+              if (activeVisit == null) return;
+
+              // Get supervisor ID from auth state
+              final authState = context.read<AuthBloc>().state;
+              String? supervisorId;
+              if (authState is AuthAuthenticated) {
+                supervisorId = authState.supervisor.id;
+              }
+
+              // Save visit to database
+              final visitBox = Hive.box<VisitModel>(AppConstants.visitBox);
+              final endTimeUtc = AppDateTime.nowUtc();
+              final uuid = const Uuid();
+
+              final completedVisit = VisitModel(
+                id: uuid.v4(),
+                supervisorId: supervisorId ?? 'UNKNOWN',
+                customerId: activeVisit.customerId,
+                projectId: activeVisit.projectId,
+                date: activeVisit.startTimeLocal,
+                startTime: activeVisit.startTimeLocal,
+                endTime: endTimeUtc.toLocal(),
+                teamMemberIds: [], // Will be filled in team selection
+                serviceReportId: null,
+              );
+
+              await visitBox.add(completedVisit);
+
               // Clear active visit from Hive
               await activeVisitBox.delete(AppConstants.activeVisitKey);
 
@@ -625,13 +660,18 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Visit ended successfully!'),
+                    content: Text('Visit ended successfully! Please select team members.'),
                     backgroundColor: AppTheme.success,
                   ),
                 );
-              }
 
-              // TODO: Navigate to team selection screen and save visit to database
+                // Navigate to team selection screen
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => TeamSelectionPage(visit: completedVisit),
+                  ),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.error,

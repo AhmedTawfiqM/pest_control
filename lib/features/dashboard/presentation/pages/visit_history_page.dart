@@ -6,6 +6,7 @@ import '../../../../core/utils/app_datetime.dart';
 import '../../../visits/data/models/visit_model.dart';
 import '../../../dashboard/data/models/customer_model.dart';
 import '../../../dashboard/data/models/project_model.dart';
+import '../../../dashboard/data/models/team_member_model.dart';
 
 class VisitHistoryPage extends StatelessWidget {
   static const String routeName = '/visit-history';
@@ -609,13 +610,7 @@ class VisitHistoryPage extends StatelessWidget {
                     'Supervisor',
                     visit.supervisorId,
                   ),
-                  _buildDetailRow(
-                    Icons.group,
-                    'Team Members',
-                    visit.teamMemberIds.isEmpty
-                        ? 'Not assigned'
-                        : '${visit.teamMemberIds.length} members',
-                  ),
+                  _buildTeamMembersRow(visit.teamMemberIds),
                 ]),
                 const SizedBox(height: 24),
 
@@ -696,6 +691,74 @@ class VisitHistoryPage extends StatelessWidget {
                 color: AppTheme.textPrimary,
               ),
               textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTeamMembersRow(List<String> teamMemberIds) {
+    if (teamMemberIds.isEmpty) {
+      return _buildDetailRow(Icons.group, 'Team Members', 'Not assigned');
+    }
+
+    // Get team member names from Hive
+    final teamMemberBox = Hive.box<TeamMemberModel>(AppConstants.teamMemberBox);
+    final teamMemberNames = teamMemberIds
+        .map((id) => teamMemberBox.get(id)?.name ?? 'Unknown')
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.group, size: 20, color: AppTheme.primaryGreen),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Team Members',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                ...teamMemberNames.map((name) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryGreen.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.primaryGreen,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+              ],
             ),
           ),
         ],
