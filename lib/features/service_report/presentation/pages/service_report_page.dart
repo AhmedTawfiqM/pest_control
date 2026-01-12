@@ -90,40 +90,46 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
           );
         }
 
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(l10n.serviceReport),
-            backgroundColor: AppTheme.primaryGreen,
-            elevation: 0,
-            bottom: TabBar(
+        return GestureDetector(
+          onTap: () {
+            // Dismiss keyboard when tapping outside
+            FocusScope.of(context).unfocus();
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(l10n.serviceReport),
+              backgroundColor: AppTheme.primaryGreen,
+              elevation: 0,
+              bottom: TabBar(
+                controller: _tabController,
+                isScrollable: false,
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white.withOpacity(0.6),
+                labelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                ),
+                tabs: [
+                  Tab(icon: const Icon(Icons.bug_report), text: l10n.pestControl),
+                  Tab(icon: const Icon(Icons.science), text: l10n.chemicals),
+                ],
+              ),
+            ),
+            body: TabBarView(
               controller: _tabController,
-              isScrollable: false,
-              indicatorColor: Colors.white,
-              indicatorWeight: 3,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white.withOpacity(0.6),
-              labelStyle: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
-              ),
-              tabs: [
-                Tab(icon: const Icon(Icons.bug_report), text: l10n.pestControl),
-                Tab(icon: const Icon(Icons.science), text: l10n.chemicals),
+              children: [
+                _buildPestControlTab(),
+                _buildChemicalsTab(),
               ],
             ),
+            bottomNavigationBar: _buildSubmitButton(activeVisit),
           ),
-          body: TabBarView(
-            controller: _tabController,
-            children: [
-              _buildPestControlTab(),
-              _buildChemicalsTab(),
-            ],
-          ),
-          bottomNavigationBar: _buildSubmitButton(activeVisit),
         );
       },
     );
@@ -654,6 +660,11 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
               TextField(
                 controller: _chemicalQuantities[chemical.id],
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) {
+                  // Dismiss keyboard when Done button is pressed
+                  FocusScope.of(context).unfocus();
+                },
                 decoration: InputDecoration(
                   labelText: '${l10n.quantity} (${chemical.unit})',
                   hintText: l10n.enterQuantity,
@@ -723,7 +734,13 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _isSubmitting ? null : () => _submitReport(activeVisit),
+                onPressed: _isSubmitting
+                    ? null
+                    : () {
+                        // Dismiss keyboard before submitting
+                        FocusScope.of(context).unfocus();
+                        _submitReport(activeVisit);
+                      },
                 icon: _isSubmitting
                     ? const SizedBox(
                         width: 20,
