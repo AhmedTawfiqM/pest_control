@@ -7,6 +7,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/app_datetime.dart';
 import '../../../../core/utils/debouncer.dart';
 import '../../../../core/models/active_visit_model.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../dashboard/data/models/customer_model.dart';
 import '../../../dashboard/data/models/project_model.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -27,7 +28,6 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
   String? selectedCustomerId;
   String? selectedProjectId;
 
-  // Debouncer for search optimization
   late final Debouncer _searchDebouncer;
 
   @override
@@ -44,9 +44,11 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Setup Visit'),
+        title: Text(l10n.newVisit),
         centerTitle: true,
       ),
       body: ValueListenableBuilder(
@@ -75,21 +77,21 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // Customer Selection - Always enabled
-                        _buildSectionTitle('Select Customer'),
+                        _buildSectionTitle(l10n.customer),
                         const SizedBox(height: 8),
-                        _buildCustomerSelector(customers, isVisitActive),
+                        _buildCustomerSelector(customers, isVisitActive, l10n),
                         const SizedBox(height: 24),
 
                         // Project Selection - Always shown, enabled only when customer selected
-                        _buildSectionTitle('Select Project'),
+                        _buildSectionTitle(l10n.project),
                         const SizedBox(height: 8),
-                        _buildProjectSelector(filteredProjects, isVisitActive, selectedCustomerId == null),
+                        _buildProjectSelector(filteredProjects, isVisitActive, selectedCustomerId == null, l10n),
                         const SizedBox(height: 24),
 
                         // Visit Timer Section - Always shown, enabled only when project selected
-                        _buildSectionTitle('Visit Session'),
+                        _buildSectionTitle(l10n.visitInProgress),
                         const SizedBox(height: 16),
-                        _buildTimerSection(context, customers, projects),
+                        _buildTimerSection(context, customers, projects, l10n),
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -114,7 +116,7 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
     );
   }
 
-  Widget _buildCustomerSelector(List<CustomerModel> customers, bool isVisitActive) {
+  Widget _buildCustomerSelector(List<CustomerModel> customers, bool isVisitActive, AppLocalizations l10n) {
     if (customers.isEmpty) {
       return Card(
         elevation: 2,
@@ -128,7 +130,7 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
             children: [
               Icon(Icons.info_outline, color: Colors.grey.shade600),
               const SizedBox(width: 12),
-              const Text('No customers available'),
+              Text(l10n.noCustomersAvailable),
             ],
           ),
         ),
@@ -200,8 +202,8 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
                     }
                   : null,
               decoration: InputDecoration(
-                labelText: 'Select Customer',
-                hintText: 'Search or select customer... (${customers.length} available)',
+                labelText: l10n.selectCustomer,
+                hintText: '${l10n.searchCustomers} (${customers.length} available)',
                 prefixIcon: Icon(Icons.business, color: AppTheme.primaryGreen),
                 suffixIcon: textEditingController.text.isNotEmpty
                     ? IconButton(
@@ -288,7 +290,7 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
     );
   }
 
-  Widget _buildProjectSelector(List<ProjectModel> filteredProjects, bool isVisitActive, bool isDisabled) {
+  Widget _buildProjectSelector(List<ProjectModel> filteredProjects, bool isVisitActive, bool isDisabled, AppLocalizations l10n) {
     final bool canInteract = !isVisitActive && !isDisabled;
 
     if (isDisabled) {
@@ -308,8 +310,8 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
             child: TextField(
               enabled: false,
               decoration: InputDecoration(
-                labelText: 'Select Project',
-                hintText: 'Select customer first...',
+                labelText: l10n.selectProject,
+                hintText: l10n.selectCustomerFirst,
                 prefixIcon: Icon(Icons.assignment, color: Colors.grey),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -388,10 +390,10 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
                     }
                   : null,
               decoration: InputDecoration(
-                labelText: 'Select Project',
+                labelText: l10n.selectProject,
                 hintText: filteredProjects.isEmpty
-                    ? 'No projects available'
-                    : 'Search or select project... (${filteredProjects.length} available)',
+                    ? l10n.noProjectsAvailable
+                    : '${l10n.searchProjects} (${filteredProjects.length} available)',
                 prefixIcon: Icon(Icons.assignment, color: AppTheme.secondaryOrange),
                 suffixIcon: textEditingController.text.isNotEmpty && canInteract
                     ? IconButton(
@@ -477,7 +479,7 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
     );
   }
 
-  Widget _buildTimerSection(BuildContext context, List<CustomerModel> customers, List<ProjectModel> projects) {
+  Widget _buildTimerSection(BuildContext context, List<CustomerModel> customers, List<ProjectModel> projects, AppLocalizations l10n) {
     final activeVisitBox = Hive.box<ActiveVisitModel>(AppConstants.activeVisitBox);
     final activeVisit = activeVisitBox.get(AppConstants.activeVisitKey);
     final isVisitActive = activeVisit != null;
@@ -514,10 +516,10 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
               const SizedBox(height: 16),
               Text(
                 isVisitActive
-                    ? 'Visit In Progress'
+                    ? l10n.visitInProgress
                     : canStartVisit
-                        ? 'Ready to Start'
-                        : 'Select Customer & Project',
+                        ? l10n.readyToStart
+                        : l10n.selectCustomerAndProject,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -533,7 +535,7 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
                   onPressed: (canStartVisit || isVisitActive)
                       ? () async {
                           if (isVisitActive) {
-                            _showEndVisitDialog(context);
+                            _showEndVisitDialog(context, l10n);
                           } else {
                             // Get selected customer and project
                             final selectedCustomer = customers.firstWhere((c) => c.id == selectedCustomerId);
@@ -583,8 +585,8 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
                               Navigator.pop(context);
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Visit started successfully!'),
+                                SnackBar(
+                                  content: Text(l10n.visitStarted),
                                   backgroundColor: AppTheme.success,
                                 ),
                               );
@@ -597,7 +599,7 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
                     size: 28,
                   ),
                   label: Text(
-                    isVisitActive ? 'End Visit' : 'Start Visit',
+                    isVisitActive ? l10n.endVisit : l10n.startVisit,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -624,27 +626,24 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
     );
   }
 
-  void _showEndVisitDialog(BuildContext context) {
+  void _showEndVisitDialog(BuildContext context, AppLocalizations l10n) {
     final activeVisitBox = Hive.box<ActiveVisitModel>(AppConstants.activeVisitBox);
 
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: AppTheme.warning),
-            SizedBox(width: 8),
-            Text('End Visit'),
+            const Icon(Icons.warning_amber_rounded, color: AppTheme.warning),
+            const SizedBox(width: 8),
+            Text(l10n.endVisit),
           ],
         ),
-        content: const Text(
-          'Are you sure you want to end this visit?\n\n'
-          'You will be asked to select team members who participated.',
-        ),
+        content: Text(l10n.endVisitConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -692,8 +691,8 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
                 Navigator.pop(context);
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Visit ended successfully! Please select team members.'),
+                  SnackBar(
+                    content: Text(l10n.visitEnded),
                     backgroundColor: AppTheme.success,
                   ),
                 );
@@ -709,7 +708,7 @@ class _VisitSetupPageState extends State<VisitSetupPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.error,
             ),
-            child: const Text('End Visit'),
+            child: Text(l10n.endVisit),
           ),
         ],
       ),

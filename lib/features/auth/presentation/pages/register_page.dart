@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/widgets/custom_text_field.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -44,9 +46,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: Text(l10n.register),
       ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -58,7 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             );
           } else if (state is AuthAuthenticated) {
-            Navigator.of(context).pushReplacementNamed('/dashboard');
+            Navigator.of(context).pushReplacementNamed(AppConstants.dashboardRoute);
           }
         },
         builder: (context, state) {
@@ -84,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       // Title
                       Text(
-                        'Create Account',
+                        l10n.registerTitle,
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.primary,
@@ -93,7 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Register as a field supervisor',
+                        l10n.registerSubtitle,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Colors.grey[600],
                             ),
@@ -104,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       // Name Field
                       CustomTextField(
                         controller: _nameController,
-                        label: 'Full Name',
+                        label: l10n.fullName,
                         hint: 'Enter your full name',
                         prefixIcon: Icons.person,
                         validator: (value) {
@@ -122,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       // Email Field
                       CustomTextField(
                         controller: _emailController,
-                        label: 'Email',
+                        label: l10n.email,
                         hint: 'Enter your email',
                         prefixIcon: Icons.email,
                         keyboardType: TextInputType.emailAddress,
@@ -141,7 +145,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       // Password Field
                       CustomTextField(
                         controller: _passwordController,
-                        label: 'Password',
+                        label: l10n.password,
                         hint: 'Enter your password',
                         prefixIcon: Icons.lock,
                         obscureText: true,
@@ -160,7 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       // Confirm Password Field
                       CustomTextField(
                         controller: _confirmPasswordController,
-                        label: 'Confirm Password',
+                        label: l10n.confirmPassword,
                         hint: 'Re-enter your password',
                         prefixIcon: Icons.lock_outline,
                         obscureText: true,
@@ -192,9 +196,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                       Colors.white),
                                 ),
                               )
-                            : const Text(
-                                'Register',
-                                style: TextStyle(fontSize: 16),
+                            : Text(
+                                l10n.register,
+                                style: const TextStyle(fontSize: 16),
                               ),
                       ),
                       const SizedBox(height: 16),
@@ -203,14 +207,14 @@ class _RegisterPageState extends State<RegisterPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Already have an account? "),
+                          Text(l10n.alreadyHaveAccount + ' '),
                           TextButton(
                             onPressed: isLoading
                                 ? null
                                 : () {
                                     Navigator.of(context).pop();
                                   },
-                            child: const Text('Login'),
+                            child: Text(l10n.login),
                           ),
                         ],
                       ),

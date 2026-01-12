@@ -70,6 +70,7 @@ class AppLocalizations {
   String get openReport => _localizedValues[locale.languageCode]!['open_report']!;
   String get addReport => _localizedValues[locale.languageCode]!['add_report']!;
   String get viewReport => _localizedValues[locale.languageCode]!['view_report']!;
+  String get readyToStart => _localizedValues[locale.languageCode]!['ready_to_start']!;
 
   // Visit Details
   String get started => _localizedValues[locale.languageCode]!['started']!;
@@ -85,6 +86,8 @@ class AppLocalizations {
   // Service Report
   String get pestControl => _localizedValues[locale.languageCode]!['pest_control']!;
   String get chemicals => _localizedValues[locale.languageCode]!['chemicals']!;
+  String get pests => _localizedValues[locale.languageCode]!['pests']!;
+  String get controlledPestsWithCount => _localizedValues[locale.languageCode]!['controlled_pests_count']!;
   String get controlledPests => _localizedValues[locale.languageCode]!['controlled_pests']!;
   String get chemicalsUsed => _localizedValues[locale.languageCode]!['chemicals_used']!;
   String get availablePests => _localizedValues[locale.languageCode]!['available_pests']!;
@@ -98,9 +101,21 @@ class AppLocalizations {
   String get noChemicalsUsed => _localizedValues[locale.languageCode]!['no_chemicals_used']!;
   String get reportInformation => _localizedValues[locale.languageCode]!['report_information']!;
   String get reportId => _localizedValues[locale.languageCode]!['report_id']!;
+  String get noActiveVisit => _localizedValues[locale.languageCode]!['no_active_visit']!;
+  String get startVisitToCreateReport => _localizedValues[locale.languageCode]!['start_visit_to_create_report']!;
+  String get backToDashboard => _localizedValues[locale.languageCode]!['back_to_dashboard']!;
+  String get allPestsControlled => _localizedValues[locale.languageCode]!['all_pests_controlled']!;
+  String get dragControlledPestsIntoThisArea => _localizedValues[locale.languageCode]!['drag_controlled_pests_here']!;
+  String get noChemicalsAvailable => _localizedValues[locale.languageCode]!['no_chemicals_available']!;
+  String get enterQuantity => _localizedValues[locale.languageCode]!['enter_quantity']!;
+  String get submitting => _localizedValues[locale.languageCode]!['submitting']!;
+  String get pleaseAddPestOrChemical => _localizedValues[locale.languageCode]!['please_add_pest_or_chemical']!;
+  String get pleaseEnterValidQuantities => _localizedValues[locale.languageCode]!['please_enter_valid_quantities']!;
+  String get errorSubmittingReport => _localizedValues[locale.languageCode]!['error_submitting_report']!;
   String get status => _localizedValues[locale.languageCode]!['status']!;
   String get completed => _localizedValues[locale.languageCode]!['completed']!;
   String get noServiceReport => _localizedValues[locale.languageCode]!['no_service_report']!;
+  String get noReportDataAvailable => _localizedValues[locale.languageCode]!['no_report_available']!;
 
   // Team Selection
   String get selectTeamMembers => _localizedValues[locale.languageCode]!['select_team_members']!;
@@ -115,6 +130,38 @@ class AppLocalizations {
   String get arabic => _localizedValues[locale.languageCode]!['arabic']!;
   String get logout => _localizedValues[locale.languageCode]!['logout']!;
   String get logoutConfirm => _localizedValues[locale.languageCode]!['logout_confirm']!;
+  String get supervisorId => _localizedValues[locale.languageCode]!['supervisor_id']!;
+  String get emailAddress => _localizedValues[locale.languageCode]!['email_address']!;
+  String get fullName => _localizedValues[locale.languageCode]!['full_name']!;
+  String get statistics => _localizedValues[locale.languageCode]!['statistics']!;
+  String get completedVisits => _localizedValues[locale.languageCode]!['completed_visits']!;
+  String get activeVisits => _localizedValues[locale.languageCode]!['active_visits']!;
+  String get changePassword => _localizedValues[locale.languageCode]!['change_password']!;
+  String get aboutApp => _localizedValues[locale.languageCode]!['about_app']!;
+  String get fieldSupervisor => _localizedValues[locale.languageCode]!['field_supervisor']!;
+
+  // Visit History
+  String get totalVisits => _localizedValues[locale.languageCode]!['total_visits']!;
+  String get totalTime => _localizedValues[locale.languageCode]!['total_time']!;
+  String get noVisitsYet => _localizedValues[locale.languageCode]!['no_visits_yet']!;
+  String get startFirstVisit => _localizedValues[locale.languageCode]!['start_first_visit']!;
+  String get additionalInformation => _localizedValues[locale.languageCode]!['additional_information']!;
+  String get timeline => _localizedValues[locale.languageCode]!['timeline']!;
+  String get visitInformation => _localizedValues[locale.languageCode]!['visit_information']!;
+
+  // Visit Setup
+  String get newVisit => _localizedValues[locale.languageCode]!['new_visit']!;
+  String get selectCustomerAndProject => _localizedValues[locale.languageCode]!['select_customer_and_project']!;
+  String get noCustomersAvailable => _localizedValues[locale.languageCode]!['no_customers_available']!;
+  String get noProjectsAvailable => _localizedValues[locale.languageCode]!['no_projects_available']!;
+  String get selectCustomerFirst => _localizedValues[locale.languageCode]!['select_customer_first']!;
+
+  // Common Messages
+  String get welcomeBack => _localizedValues[locale.languageCode]!['welcome_back']!;
+  String get noDataAvailable => _localizedValues[locale.languageCode]!['no_data_available']!;
+  String get created => _localizedValues[locale.languageCode]!['created']!;
+  String get detailedActivityLog => _localizedValues[locale.languageCode]!['detailed_activity_log']!;
+  String get noReportAvailable => _localizedValues[locale.languageCode]!['no_report_available']!;
 
   // Messages
   String get visitStarted => _localizedValues[locale.languageCode]!['visit_started']!;
@@ -177,8 +224,9 @@ class AppLocalizations {
       'visit_details': 'Visit Details',
       'view_details': 'View Details',
       'open_report': 'Open Report',
-      'add_report': 'Add Report',
+      'add_report': 'Add Service Report',
       'view_report': 'View Report',
+      'ready_to_start': 'Ready to Start',
 
       // Visit Details
       'started': 'Started',
@@ -194,6 +242,8 @@ class AppLocalizations {
       // Service Report
       'pest_control': 'Pest Control',
       'chemicals': 'Chemicals',
+      'pests': 'Pests',
+      'controlled_pests_count': 'Controlled Pests',
       'controlled_pests': 'Controlled Pests',
       'chemicals_used': 'Chemicals Used',
       'available_pests': 'Available Pests',
@@ -205,6 +255,17 @@ class AppLocalizations {
       'drop_pests_here': 'Drop pests here',
       'no_pests_controlled': 'No pests were controlled during this visit',
       'no_chemicals_used': 'No chemicals were used during this visit',
+      'no_active_visit': 'No Active Visit',
+      'start_visit_to_create_report': 'Start a visit to create a service report',
+      'back_to_dashboard': 'Back to Dashboard',
+      'all_pests_controlled': 'All pests controlled',
+      'drag_controlled_pests_here': 'Drag controlled pests into this area',
+      'no_chemicals_available': 'No chemicals available',
+      'enter_quantity': 'Enter quantity',
+      'submitting': 'Submitting...',
+      'please_add_pest_or_chemical': 'Please add at least one pest or chemical',
+      'please_enter_valid_quantities': 'Please enter valid quantities for all selected chemicals',
+      'error_submitting_report': 'Error submitting report',
       'report_information': 'Report Information',
       'report_id': 'Report ID',
       'status': 'Status',
@@ -224,6 +285,38 @@ class AppLocalizations {
       'arabic': 'Arabic',
       'logout': 'Logout',
       'logout_confirm': 'Are you sure you want to logout?',
+      'supervisor_id': 'Supervisor ID',
+      'email_address': 'Email Address',
+      'full_name': 'Full Name',
+      'statistics': 'Statistics',
+      'completed_visits': 'Completed Visits',
+      'active_visits': 'Active Visits',
+      'change_password': 'Change Password',
+      'about_app': 'About App',
+      'field_supervisor': 'Field Supervisor',
+
+      // Visit History
+      'total_visits': 'Total Visits',
+      'total_time': 'Total Time',
+      'no_visits_yet': 'No visits yet',
+      'start_first_visit': 'Start your first visit to see history',
+      'additional_information': 'Additional Information',
+      'timeline': 'Timeline',
+      'visit_information': 'Visit Information',
+
+      // Visit Setup
+      'new_visit': 'New Visit',
+      'select_customer_and_project': 'Select customer and project to start',
+      'no_customers_available': 'No customers available',
+      'no_projects_available': 'No projects available',
+      'select_customer_first': 'Select a customer first',
+
+      // Common Messages
+      'welcome_back': 'Welcome back',
+      'no_data_available': 'No data available',
+      'created': 'Created',
+      'detailed_activity_log': 'Detailed Activity Log',
+      'no_report_available': 'No report data available for this visit',
 
       // Messages
       'visit_started': 'Visit started successfully!',
@@ -286,6 +379,7 @@ class AppLocalizations {
       'open_report': 'فتح التقرير',
       'add_report': 'إضافة تقرير',
       'view_report': 'عرض التقرير',
+      'ready_to_start': 'جاهز للبدء',
 
       // Visit Details
       'started': 'بدأت',
@@ -301,6 +395,8 @@ class AppLocalizations {
       // Service Report
       'pest_control': 'مكافحة الآفات',
       'chemicals': 'المواد الكيميائية',
+      'pests': 'الآفات',
+      'controlled_pests_count': 'الآفات المكافحة',
       'controlled_pests': 'الآفات المكافحة',
       'chemicals_used': 'المواد الكيميائية المستخدمة',
       'available_pests': 'الآفات المتاحة',
@@ -312,6 +408,17 @@ class AppLocalizations {
       'drop_pests_here': 'أفلت الآفات هنا',
       'no_pests_controlled': 'لم يتم مكافحة أي آفات خلال هذه الزيارة',
       'no_chemicals_used': 'لم يتم استخدام أي مواد كيميائية خلال هذه الزيارة',
+      'no_active_visit': 'لا توجد زيارة نشطة',
+      'start_visit_to_create_report': 'ابدأ زيارة لإنشاء تقرير خدمة',
+      'back_to_dashboard': 'العودة إلى لوحة التحكم',
+      'all_pests_controlled': 'تم مكافحة جميع الآفات',
+      'drag_controlled_pests_here': 'اسحب الآفات المكافحة إلى هذه المنطقة',
+      'no_chemicals_available': 'لا توجد مواد كيميائية متاحة',
+      'enter_quantity': 'أدخل الكمية',
+      'submitting': 'جارٍ الإرسال...',
+      'please_add_pest_or_chemical': 'يرجى إضافة آفة أو مادة كيميائية واحدة على الأقل',
+      'please_enter_valid_quantities': 'يرجى إدخال كميات صحيحة لجميع المواد الكيميائية المحددة',
+      'error_submitting_report': 'خطأ في إرسال التقرير',
       'report_information': 'معلومات التقرير',
       'report_id': 'رقم التقرير',
       'status': 'الحالة',
@@ -331,6 +438,38 @@ class AppLocalizations {
       'arabic': 'العربية',
       'logout': 'تسجيل الخروج',
       'logout_confirm': 'هل أنت متأكد أنك تريد تسجيل الخروج؟',
+      'supervisor_id': 'رقم المشرف',
+      'email_address': 'البريد الإلكتروني',
+      'full_name': 'الاسم الكامل',
+      'statistics': 'الإحصائيات',
+      'completed_visits': 'الزيارات المكتملة',
+      'active_visits': 'الزيارات النشطة',
+      'change_password': 'تغيير كلمة المرور',
+      'about_app': 'حول التطبيق',
+      'field_supervisor': 'مشرف ميداني',
+
+      // Visit History
+      'total_visits': 'إجمالي الزيارات',
+      'total_time': 'إجمالي الوقت',
+      'no_visits_yet': 'لا توجد زيارات بعد',
+      'start_first_visit': 'ابدأ زيارتك الأولى لرؤية السجل',
+      'additional_information': 'معلومات إضافية',
+      'timeline': 'الجدول الزمني',
+      'visit_information': 'معلومات الزيارة',
+
+      // Visit Setup
+      'new_visit': 'زيارة جديدة',
+      'select_customer_and_project': 'حدد العميل والمشروع للبدء',
+      'no_customers_available': 'لا يوجد عملاء متاحين',
+      'no_projects_available': 'لا توجد مشاريع متاحة',
+      'select_customer_first': 'حدد العميل أولاً',
+
+      // Common Messages
+      'welcome_back': 'مرحباً بعودتك',
+      'no_data_available': 'لا توجد بيانات متاحة',
+      'created': 'تم الإنشاء',
+      'detailed_activity_log': 'سجل النشاط التفصيلي',
+      'no_report_available': 'لا توجد بيانات تقرير لهذه الزيارة',
 
       // Messages
       'visit_started': 'تم بدء الزيارة بنجاح!',

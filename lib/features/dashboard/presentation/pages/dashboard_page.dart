@@ -9,6 +9,8 @@ import '../../../../core/localization/app_localizations.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../visits/data/models/visit_model.dart';
+import '../widgets/live_timer_widget.dart';
+import '../widgets/end_visit_dialog.dart';
 import 'profile_page.dart';
 import 'visit_history_page.dart';
 import '../../../visits/presentation/pages/visit_setup_page.dart';
@@ -231,42 +233,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   const SizedBox(height: 20),
 
                   // Live Timer
-                  StreamBuilder(
-                    stream: Stream.periodic(const Duration(seconds: 1)),
-                    builder: (context, snapshot) {
-                      final duration = AppDateTime.durationFromNowUtc(activeVisit.startTimeUtc);
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.access_time,
-                              color: Colors.white,
-                              size: 32,
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              AppDateTime.formatDuration(duration),
-                              style: const TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontFeatures: [FontFeature.tabularFigures()],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                  LiveTimerWidget(startTimeUtc: activeVisit.startTimeUtc),
                   const SizedBox(height: 20),
 
                   // Visit Details
@@ -327,7 +294,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            _showEndVisitDialog(context, activeVisit);
+                            EndVisitDialog.show(context, activeVisit);
                           },
                           icon: const Icon(Icons.stop, size: 20),
                           label: Text(
@@ -427,149 +394,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
             ],
-          ),
-        ),
-      ],
-    );
-  }
-
-
-  void _showEndVisitDialog(BuildContext context, ActiveVisitModel activeVisit) {
-    final l10n = AppLocalizations.of(context);
-    final activeVisitBox = Hive.box<ActiveVisitModel>(AppConstants.activeVisitBox);
-    final duration = AppDateTime.durationFromNowUtc(activeVisit.startTimeUtc);
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.warning_amber_rounded, color: AppTheme.warning),
-            const SizedBox(width: 8),
-            Text(l10n.endVisit),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.endVisitConfirm,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 12),
-            _buildSummaryRow(l10n.date, AppDateTime.format(
-              activeVisit.startTimeLocal,
-              AppDateTimeFormat.shortDate,
-            )),
-            const SizedBox(height: 8),
-            _buildSummaryRow(l10n.startTime, AppDateTime.format(
-              activeVisit.startTimeLocal,
-              AppDateTimeFormat.time12Hour,
-            )),
-            const SizedBox(height: 8),
-            _buildSummaryRow(l10n.duration, AppDateTime.formatDuration(duration)),
-            const SizedBox(height: 8),
-            _buildSummaryRow(l10n.customer, activeVisit.customerName),
-            const SizedBox(height: 8),
-            _buildSummaryRow(l10n.project, activeVisit.projectName),
-            const SizedBox(height: 12),
-            const Divider(),
-            const SizedBox(height: 12),
-            Text(
-              l10n.selectTeamMembersMsg,
-              style: const TextStyle(
-                fontSize: 14,
-                fontStyle: FontStyle.italic,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-
-              // Update visit in database
-              final visitBox = Hive.box<VisitModel>(AppConstants.visitBox);
-              final existingVisit = visitBox.get(activeVisit.visitId);
-
-              if (existingVisit == null) {
-                throw Exception('Visit not found in database');
-              }
-
-              final endTimeUtc = AppDateTime.nowUtc();
-
-              final completedVisit = VisitModel(
-                id: existingVisit.id,
-                supervisorId: existingVisit.supervisorId,
-                customerId: existingVisit.customerId,
-                projectId: existingVisit.projectId,
-                date: existingVisit.date,
-                startTime: existingVisit.startTime,
-                endTime: endTimeUtc.toLocal(),
-                teamMemberIds: [], // Will be filled in team selection screen
-                serviceReportId: existingVisit.serviceReportId,
-              );
-
-              await visitBox.put(activeVisit.visitId, completedVisit);
-
-              // Clear active visit from Hive
-              await activeVisitBox.delete(AppConstants.activeVisitKey);
-
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.visitEnded),
-                    backgroundColor: AppTheme.success,
-                  ),
-                );
-
-                // Navigate to team selection screen
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => TeamSelectionPage(visit: completedVisit),
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.error,
-            ),
-            child: Text(l10n.endVisit),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey,
-          ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ],

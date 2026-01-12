@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/widgets/custom_text_field.dart';
+import '../../../../core/widgets/language_switcher.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -40,6 +43,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -51,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             );
           } else if (state is AuthAuthenticated) {
-            Navigator.of(context).pushReplacementNamed('/dashboard');
+            Navigator.of(context).pushReplacementNamed(AppConstants.dashboardRoute);
           }
         },
         builder: (context, state) {
@@ -67,6 +72,10 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // Language Switcher at top
+                      const LanguageSwitcher(),
+                      const SizedBox(height: 32),
+
                       // Logo/Icon
                       Icon(
                         Icons.pest_control,
@@ -77,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       // Title
                       Text(
-                        'Pest Control Manager',
+                        l10n.appName,
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.primary,
@@ -97,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                       // Email Field
                       CustomTextField(
                         controller: _emailController,
-                        label: 'Email',
+                        label: l10n.email,
                         hint: 'Enter your email',
                         prefixIcon: Icons.email,
                         keyboardType: TextInputType.emailAddress,
@@ -116,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                       // Password Field
                       CustomTextField(
                         controller: _passwordController,
-                        label: 'Password',
+                        label: l10n.password,
                         hint: 'Enter your password',
                         prefixIcon: Icons.lock,
                         obscureText: true,
@@ -148,9 +157,9 @@ class _LoginPageState extends State<LoginPage> {
                                       Colors.white),
                                 ),
                               )
-                            : const Text(
-                                'Login',
-                                style: TextStyle(fontSize: 16),
+                            : Text(
+                                l10n.login,
+                                style: const TextStyle(fontSize: 16),
                               ),
                       ),
                       const SizedBox(height: 16),
@@ -159,15 +168,15 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Don't have an account? "),
+                          Text(l10n.dontHaveAccount + ' '),
                           TextButton(
                             onPressed: isLoading
                                 ? null
                                 : () {
                                     Navigator.of(context)
-                                        .pushNamed('/register');
+                                        .pushNamed(AppConstants.registerRoute);
                                   },
-                            child: const Text('Register'),
+                            child: Text(l10n.register),
                           ),
                         ],
                       ),

@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_datetime.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../visits/data/models/visit_model.dart';
 import '../../../dashboard/data/models/customer_model.dart';
 import '../../../dashboard/data/models/project_model.dart';
@@ -16,10 +17,11 @@ class VisitHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Visit History'),
-        centerTitle: true,
+        title: Text(l10n.visitHistory),
       ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box<VisitModel>(AppConstants.visitBox).listenable(),
@@ -30,7 +32,7 @@ class VisitHistoryPage extends StatelessWidget {
             ..sort((a, b) => b.startTime.compareTo(a.startTime)); // Most recent first
 
           if (completedVisits.isEmpty) {
-            return _buildEmptyState();
+            return _buildEmptyState(l10n);
           }
 
           return ValueListenableBuilder(
@@ -45,7 +47,7 @@ class VisitHistoryPage extends StatelessWidget {
                   return Column(
                     children: [
                       // Summary Card
-                      _buildSummaryCard(completedVisits),
+                      _buildSummaryCard(completedVisits, l10n),
 
                       // List of visits
                       Expanded(
@@ -60,8 +62,9 @@ class VisitHistoryPage extends StatelessWidget {
                             return _buildVisitCard(
                               context,
                               visit,
-                              customer?.name ?? 'Unknown Customer',
-                              project?.name ?? 'Unknown Project',
+                              customer?.name ?? l10n.noDataAvailable,
+                              project?.name ?? l10n.noDataAvailable,
+                              l10n,
                             );
                           },
                         ),
@@ -77,7 +80,7 @@ class VisitHistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -89,7 +92,7 @@ class VisitHistoryPage extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'No Visit History',
+            l10n.noVisitsYet,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -98,7 +101,7 @@ class VisitHistoryPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Completed visits will appear here',
+            l10n.startFirstVisit,
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey.shade500,
@@ -109,7 +112,7 @@ class VisitHistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCard(List<VisitModel> visits) {
+  Widget _buildSummaryCard(List<VisitModel> visits, AppLocalizations l10n) {
     final totalDuration = visits.fold<Duration>(
       Duration.zero,
       (sum, visit) {
@@ -144,9 +147,9 @@ class VisitHistoryPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildSummaryItem(
-            icon: Icons.check_circle,
-            label: 'Total Visits',
+          _buildStat(
+            icon: Icons.assignment_turned_in,
+            label: l10n.totalVisits,
             value: visits.length.toString(),
           ),
           Container(
@@ -154,17 +157,17 @@ class VisitHistoryPage extends StatelessWidget {
             width: 1,
             color: Colors.white.withValues(alpha: 0.3),
           ),
-          _buildSummaryItem(
+          _buildStat(
             icon: Icons.access_time,
-            label: 'Total Time',
-            value: AppDateTime.formatDurationHuman(totalDuration),
+            label: l10n.totalTime,
+            value: AppDateTime.formatDuration(totalDuration),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryItem({
+  Widget _buildStat({
     required IconData icon,
     required String label,
     required String value,
@@ -198,6 +201,7 @@ class VisitHistoryPage extends StatelessWidget {
     VisitModel visit,
     String customerName,
     String projectName,
+    AppLocalizations l10n,
   ) {
     final duration = visit.endTime!.difference(visit.startTime);
     final hasCrossedMidnight = AppDateTime.hasCrossedMidnight(
@@ -415,12 +419,12 @@ class VisitHistoryPage extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () {
-                        _showVisitDetails(context, visit, customerName, projectName);
+                        _showVisitDetails(context, visit, customerName, projectName, l10n);
                       },
                       icon: const Icon(Icons.visibility, size: 16),
-                      label: const Text(
-                        'View Details',
-                        style: TextStyle(fontSize: 12),
+                      label: Text(
+                        l10n.viewDetails,
+                        style: const TextStyle(fontSize: 12),
                       ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.primaryGreen,
@@ -437,13 +441,13 @@ class VisitHistoryPage extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: visit.serviceReportId != null
                           ? () {
-                              _showServiceReportSheet(context, visit);
+                              _showServiceReportSheet(context, visit, l10n);
                             }
                           : null,
                       icon: const Icon(Icons.description, size: 16),
-                      label: const Text(
-                        'Open Report',
-                        style: TextStyle(fontSize: 12),
+                      label: Text(
+                        l10n.openReport,
+                        style: const TextStyle(fontSize: 12),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryGreen,
@@ -500,6 +504,7 @@ class VisitHistoryPage extends StatelessWidget {
     VisitModel visit,
     String customerName,
     String projectName,
+    AppLocalizations l10n,
   ) {
     final duration = visit.endTime!.difference(visit.startTime);
     final hasCrossedMidnight = AppDateTime.hasCrossedMidnight(
@@ -554,10 +559,10 @@ class VisitHistoryPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Visit Details',
-                        style: TextStyle(
+                        l10n.visitDetails,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -613,32 +618,32 @@ class VisitHistoryPage extends StatelessWidget {
                 ],
 
                 // Details
-                _buildDetailSection('Customer Information', [
-                  _buildDetailRow(Icons.business, 'Customer', customerName),
-                  _buildDetailRow(Icons.assignment, 'Project', projectName),
+                _buildDetailSection(l10n.customer, [
+                  _buildDetailRow(Icons.business, l10n.customer, customerName),
+                  _buildDetailRow(Icons.assignment, l10n.project, projectName),
                 ]),
                 const SizedBox(height: 24),
 
-                _buildDetailSection('Visit Timeline', [
+                _buildDetailSection(l10n.timeline, [
                   _buildDetailRow(
                     Icons.calendar_today,
-                    'Date',
+                    l10n.date,
                     AppDateTime.format(visit.date, AppDateTimeFormat.longDate),
                   ),
                   _buildDetailRow(
                     Icons.play_arrow,
-                    'Start Time',
+                    l10n.startTime,
                     AppDateTime.format(visit.startTime, AppDateTimeFormat.time12Hour),
                   ),
                   _buildDetailRow(
                     Icons.stop,
-                    'End Time',
+                    l10n.endTime,
                     '${AppDateTime.format(visit.endTime!, AppDateTimeFormat.time12Hour)}'
                     '${hasCrossedMidnight ? ' (+1 day)' : ''}',
                   ),
                   _buildDetailRow(
                     Icons.timer,
-                    'Duration',
+                    l10n.duration,
                     duration.inSeconds < 60
                         ? '${duration.inSeconds} seconds'
                         : duration.inMinutes < 60
@@ -648,14 +653,14 @@ class VisitHistoryPage extends StatelessWidget {
                 ]),
                 const SizedBox(height: 24),
 
-                _buildDetailSection('Additional Information', [
-                  _buildDetailRow(Icons.badge, 'Visit ID', visit.id),
+                _buildDetailSection(l10n.additionalInformation, [
+                  _buildDetailRow(Icons.badge, l10n.visitId, visit.id),
                   _buildDetailRow(
                     Icons.person,
-                    'Supervisor',
+                    l10n.supervisor,
                     visit.supervisorId,
                   ),
-                  _buildTeamMembersRow(visit.teamMemberIds),
+                  _buildTeamMembersRow(visit.teamMemberIds, l10n),
                 ]),
                 const SizedBox(height: 24),
 
@@ -670,7 +675,7 @@ class VisitHistoryPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Close'),
+                    child: Text(l10n.close),
                   ),
                 ),
               ],
@@ -681,7 +686,7 @@ class VisitHistoryPage extends StatelessWidget {
     );
   }
 
-  void _showServiceReportSheet(BuildContext context, VisitModel visit) {
+  void _showServiceReportSheet(BuildContext context, VisitModel visit, AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -752,15 +757,15 @@ class VisitHistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTeamMembersRow(List<String> teamMemberIds) {
+  Widget _buildTeamMembersRow(List<String> teamMemberIds, AppLocalizations l10n) {
     if (teamMemberIds.isEmpty) {
-      return _buildDetailRow(Icons.group, 'Team Members', 'Not assigned');
+      return _buildDetailRow(Icons.group, l10n.teamMembers, l10n.notAssigned);
     }
 
     // Get team member names from Hive
     final teamMemberBox = Hive.box<TeamMemberModel>(AppConstants.teamMemberBox);
     final teamMemberNames = teamMemberIds
-        .map((id) => teamMemberBox.get(id)?.name ?? 'Unknown')
+        .map((id) => teamMemberBox.get(id)?.name ?? l10n.noDataAvailable)
         .toList();
 
     return Padding(
@@ -773,7 +778,7 @@ class VisitHistoryPage extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Text(
-              'Team Members',
+              l10n.teamMembers,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey.shade600,
@@ -797,7 +802,7 @@ class VisitHistoryPage extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryGreen.withOpacity(0.1),
+                          color: AppTheme.primaryGreen.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -820,4 +825,14 @@ class VisitHistoryPage extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
 

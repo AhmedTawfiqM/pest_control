@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../constants/app_constants.dart';
+import 'app_language.dart';
 
 class LanguageCubit extends Cubit<Locale> {
   LanguageCubit() : super(const Locale('en', 'US')) {
@@ -10,24 +11,35 @@ class LanguageCubit extends Cubit<Locale> {
 
   void _loadSavedLanguage() {
     final box = Hive.box(AppConstants.appSettingsBox);
-    final languageCode = box.get('language_code', defaultValue: 'en') as String;
-    final countryCode = box.get('country_code', defaultValue: 'US') as String;
+    final languageCode = box.get(
+      AppConstants.languageCodeKey,
+      defaultValue: AppLanguage.english.languageCode,
+    ) as String;
+    final countryCode = box.get(
+      AppConstants.countryCodeKey,
+      defaultValue: AppLanguage.english.countryCode,
+    ) as String;
     emit(Locale(languageCode, countryCode));
   }
 
-  Future<void> changeLanguage(Locale locale) async {
+  Future<void> changeLanguage(AppLanguage language) async {
     final box = Hive.box(AppConstants.appSettingsBox);
-    await box.put('language_code', locale.languageCode);
-    await box.put('country_code', locale.countryCode ?? '');
-    emit(locale);
+    await box.put(AppConstants.languageCodeKey, language.languageCode);
+    await box.put(AppConstants.countryCodeKey, language.countryCode);
+    emit(Locale(language.languageCode, language.countryCode));
   }
 
   void toggleLanguage() {
-    if (state.languageCode == 'en') {
-      changeLanguage(const Locale('ar', 'SA'));
+    final currentLanguage = AppLanguage.fromLanguageCode(state.languageCode);
+    if (currentLanguage == AppLanguage.english) {
+      changeLanguage(AppLanguage.arabic);
     } else {
-      changeLanguage(const Locale('en', 'US'));
+      changeLanguage(AppLanguage.english);
     }
+  }
+
+  AppLanguage get currentLanguage {
+    return AppLanguage.fromLanguageCode(state.languageCode);
   }
 }
 

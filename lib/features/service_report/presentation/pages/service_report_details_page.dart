@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_datetime.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../visits/data/models/visit_model.dart';
 import '../../data/models/service_report_model.dart';
 
@@ -18,6 +19,8 @@ class ServiceReportDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: DraggableScrollableSheet(
@@ -65,22 +68,22 @@ class ServiceReportDetailsPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Service Report',
-                              style: TextStyle(
+                              l10n.serviceReport,
+                              style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
-                              'Detailed Activity Log',
-                              style: TextStyle(
+                              l10n.detailedActivityLog,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.white70,
                               ),
@@ -99,7 +102,7 @@ class ServiceReportDetailsPage extends StatelessWidget {
                 // Content
                 Expanded(
                   child: visit.serviceReportId == null
-                      ? _buildNoReportState()
+                      ? _buildNoReportState(l10n)
                       : ValueListenableBuilder(
                           valueListenable: Hive.box<ServiceReportModel>(
                             AppConstants.serviceReportBox,
@@ -108,7 +111,7 @@ class ServiceReportDetailsPage extends StatelessWidget {
                             final report = reportBox.get(visit.serviceReportId);
 
                             if (report == null) {
-                              return _buildNoReportState();
+                              return _buildNoReportState(l10n);
                             }
 
                             return ListView(
@@ -116,15 +119,15 @@ class ServiceReportDetailsPage extends StatelessWidget {
                               padding: const EdgeInsets.all(20),
                               children: [
                                 // Pests Section
-                                _buildPestsSection(report),
+                                _buildPestsSection(report, l10n),
                                 const SizedBox(height: 20),
 
                                 // Chemicals Section
-                                _buildChemicalsSection(report),
+                                _buildChemicalsSection(report, l10n),
                                 const SizedBox(height: 20),
 
                                 // Report Info
-                                _buildReportInfo(report, visit),
+                                _buildReportInfo(report, visit, l10n),
                               ],
                             );
                           },
@@ -138,7 +141,7 @@ class ServiceReportDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildNoReportState() {
+  Widget _buildNoReportState(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -150,7 +153,7 @@ class ServiceReportDetailsPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No Service Report',
+            l10n.noServiceReport,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -159,7 +162,7 @@ class ServiceReportDetailsPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'No report data available for this visit',
+            l10n.noReportDataAvailable,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -170,7 +173,7 @@ class ServiceReportDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPestsSection(ServiceReportModel report) {
+  Widget _buildPestsSection(ServiceReportModel report, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -178,9 +181,9 @@ class ServiceReportDetailsPage extends StatelessWidget {
           children: [
             const Icon(Icons.bug_report, color: Colors.orange, size: 22),
             const SizedBox(width: 8),
-            const Text(
-              'Controlled Pests',
-              style: TextStyle(
+            Text(
+              l10n.controlledPests,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.orange,
@@ -213,12 +216,12 @@ class ServiceReportDetailsPage extends StatelessWidget {
             border: Border.all(color: Colors.orange.withOpacity(0.2)),
           ),
           child: report.controlledPests.isEmpty
-              ? const Center(
+              ? Center(
                   child: Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     child: Text(
-                      'No pests were controlled during this visit',
-                      style: TextStyle(
+                      l10n.noPestsControlled,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.grey,
                         fontStyle: FontStyle.italic,
@@ -270,7 +273,7 @@ class ServiceReportDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildChemicalsSection(ServiceReportModel report) {
+  Widget _buildChemicalsSection(ServiceReportModel report, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -278,9 +281,9 @@ class ServiceReportDetailsPage extends StatelessWidget {
           children: [
             const Icon(Icons.science, color: AppTheme.secondaryOrange, size: 22),
             const SizedBox(width: 8),
-            const Text(
-              'Chemicals Used',
-              style: TextStyle(
+            Text(
+              l10n.chemicalsUsed,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: AppTheme.secondaryOrange,
@@ -313,12 +316,12 @@ class ServiceReportDetailsPage extends StatelessWidget {
             border: Border.all(color: AppTheme.secondaryOrange.withOpacity(0.2)),
           ),
           child: report.usedChemicals.isEmpty
-              ? const Center(
+              ? Center(
                   child: Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     child: Text(
-                      'No chemicals were used during this visit',
-                      style: TextStyle(
+                      l10n.noChemicalsUsed,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.grey,
                         fontStyle: FontStyle.italic,
@@ -388,7 +391,7 @@ class ServiceReportDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildReportInfo(ServiceReportModel report, VisitModel visit) {
+  Widget _buildReportInfo(ServiceReportModel report, VisitModel visit, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -398,30 +401,31 @@ class ServiceReportDetailsPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Report Information',
-            style: TextStyle(
+          Text(
+            l10n.reportInformation,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),
-          _buildInfoRow('Report ID', report.id),
+          _buildInfoRow(l10n.reportId, report.id, l10n),
           const SizedBox(height: 12),
-          _buildInfoRow('Visit ID', visit.id),
+          _buildInfoRow(l10n.visitId, visit.id, l10n),
           const SizedBox(height: 12),
           _buildInfoRow(
-            'Created',
+            l10n.created,
             AppDateTime.format(report.createdAt, AppDateTimeFormat.longDateTime),
+            l10n,
           ),
           const SizedBox(height: 12),
-          _buildInfoRow('Status', 'Completed', isStatus: true),
+          _buildInfoRow(l10n.status, l10n.completed, l10n, isStatus: true),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {bool isStatus = false}) {
+  Widget _buildInfoRow(String label, String value, AppLocalizations l10n, {bool isStatus = false}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

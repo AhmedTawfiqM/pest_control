@@ -28,6 +28,17 @@ class AppConstants {
   static const String isFirstLaunchKey = 'is_first_launch';
   static const String currentUserIdKey = 'current_user_id';
   static const String activeVisitKey = 'current';
+  static const String languageCodeKey = 'language_code';
+  static const String countryCodeKey = 'country_code';
+
+  // Route Names
+  static const String loginRoute = '/login';
+  static const String registerRoute = '/register';
+  static const String dashboardRoute = '/dashboard';
+  static const String profileRoute = '/profile';
+  static const String visitSetupRoute = '/visit-setup';
+  static const String visitHistoryRoute = '/visit-history';
+  static const String serviceReportRoute = '/service-report';
 
   // App Strings
   static const String appName = 'Pest Control Manager';

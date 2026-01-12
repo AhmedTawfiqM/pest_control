@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/models/active_visit_model.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../visits/data/models/visit_model.dart';
 import '../../data/models/pest_model.dart';
 import '../../data/models/chemical_model.dart';
@@ -47,6 +48,8 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ValueListenableBuilder(
       valueListenable: Hive.box<ActiveVisitModel>(AppConstants.activeVisitBox).listenable(),
       builder: (context, Box<ActiveVisitModel> box, _) {
@@ -54,7 +57,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
 
         if (activeVisit == null) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Service Report')),
+            appBar: AppBar(title: Text(l10n.serviceReport)),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +65,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                   Icon(Icons.info_outline, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
-                    'No Active Visit',
+                    l10n.noActiveVisit,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -71,14 +74,14 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Start a visit to create a service report',
+                    l10n.startVisitToCreateReport,
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.arrow_back),
-                    label: const Text('Back to Dashboard'),
+                    label: Text(l10n.backToDashboard),
                   ),
                 ],
               ),
@@ -88,7 +91,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Service Report'),
+            title: Text(l10n.serviceReport),
             backgroundColor: AppTheme.primaryGreen,
             elevation: 0,
             bottom: TabBar(
@@ -106,15 +109,9 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
               ),
-              tabs: const [
-                Tab(
-                  icon: Icon(Icons.bug_report, size: 24),
-                  text: 'Pest Control',
-                ),
-                Tab(
-                  icon: Icon(Icons.science, size: 24),
-                  text: 'Chemicals',
-                ),
+              tabs: [
+                Tab(icon: const Icon(Icons.bug_report), text: l10n.pestControl),
+                Tab(icon: const Icon(Icons.science), text: l10n.chemicals),
               ],
             ),
           ),
@@ -132,6 +129,8 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
   }
 
   Widget _buildPestControlTab() {
+    final l10n = AppLocalizations.of(context);
+
     return ValueListenableBuilder(
       valueListenable: Hive.box<PestModel>(AppConstants.pestBox).listenable(),
       builder: (context, Box<PestModel> pestBox, _) {
@@ -153,7 +152,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Drag & drop pests into the controlled container',
+                      l10n.dragDropPests,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[700],
@@ -176,7 +175,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                         Padding(
                           padding: const EdgeInsets.all(16),
                           child: Text(
-                            'Available Pests',
+                            l10n.availablePests,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -196,7 +195,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'All pests controlled',
+                                        l10n.allPestsControlled,
                                         style: TextStyle(color: Colors.grey[500]),
                                       ),
                                     ],
@@ -220,7 +219,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
 
                   // Controlled Container (Right Side)
                   Expanded(
-                    child: _buildControlledContainer(),
+                    child: _buildControlledContainer(l10n),
                   ),
                 ],
               ),
@@ -275,56 +274,61 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
       elevation: isDragging ? 0 : 2,
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Row(
+        child: Column(
           children: [
-            // Icon
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.orange[100],
-                borderRadius: BorderRadius.circular(8),
+            Text(
+              pest.name,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
-              child: const Icon(Icons.bug_report, color: Colors.orange, size: 24),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
-            const SizedBox(width: 12),
+            Row(
+              children: [
+                // Icon
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.bug_report, color: Colors.orange, size: 24),
+                ),
+                const SizedBox(width: 12),
 
-            // Name and ID Column
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    pest.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
+                // Name and ID Column
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+                      const SizedBox(height: 4),
+                      Text(
+                        'ID: ${pest.id}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'ID: ${pest.id}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+
+                // Drag Indicator
+                const SizedBox(width: 8),
+                const Icon(Icons.drag_indicator, color: Colors.grey),
+              ],
             ),
-
-            // Drag Indicator
-            const SizedBox(width: 8),
-            const Icon(Icons.drag_indicator, color: Colors.grey),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildControlledContainer() {
+  Widget _buildControlledContainer(AppLocalizations l10n) {
     return DragTarget<PestModel>(
       onAccept: (pest) {
         setState(() {
@@ -351,7 +355,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                   const Icon(Icons.check_circle, color: AppTheme.success),
                   const SizedBox(width: 8),
                   Text(
-                    'Controlled Pests (${_controlledPests.length})',
+                    '${l10n.controlledPestsWithCount} (${_controlledPests.length})',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -388,7 +392,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Drop pests here',
+                              l10n.dropPestsHere,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -397,7 +401,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Drag controlled pests into this area',
+                              l10n.dragControlledPestsIntoThisArea,
                               style: TextStyle(color: Colors.grey[500]),
                             ),
                           ],
@@ -419,54 +423,100 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
   }
 
   Widget _buildControlledPestItem(PestModel pest, int index) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      color: AppTheme.success.withOpacity(0.1),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          children: [
-            Text(
-              pest.name,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.success,
-                fontSize: 16,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 300),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.8 + (value * 0.2),
+          child: Opacity(
+            opacity: value,
+            child: child,
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        elevation: 4,
+        shadowColor: AppTheme.success.withValues(alpha: 0.3),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(
+            color: AppTheme.success,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppTheme.success.withValues(alpha: 0.15),
+                AppTheme.success.withValues(alpha: 0.05),
+              ],
             ),
-            Row(
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.success,
-                    borderRadius: BorderRadius.circular(8),
+                // Pest Name - takes most space
+                Expanded(
+                  child: Text(
+                    pest.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: AppTheme.success,
+                      letterSpacing: 0.2,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
-                  child: const Icon(Icons.check, color: Colors.white, size: 20),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
 
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: AppTheme.error),
-                  onPressed: () {
-                    setState(() {
-                      _controlledPests.removeAt(index);
-                    });
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
+                // Remove Button - smaller and simpler
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        _controlledPests.removeAt(index);
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.error.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppTheme.error.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: AppTheme.error,
+                        size: 18,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildChemicalsTab() {
+    final l10n = AppLocalizations.of(context);
+
     return ValueListenableBuilder(
       valueListenable: Hive.box<ChemicalModel>(AppConstants.chemicalBox).listenable(),
       builder: (context, Box<ChemicalModel> chemicalBox, _) {
@@ -485,7 +535,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Select chemicals used and enter quantities',
+                      l10n.selectChemicals,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[700],
@@ -499,7 +549,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
 
             Expanded(
               child: chemicals.isEmpty
-                  ? const Center(child: Text('No chemicals available'))
+                  ? Center(child: Text(l10n.noChemicalsAvailable))
                   : ListView.builder(
                       padding: const EdgeInsets.all(16),
                       itemCount: chemicals.length,
@@ -516,6 +566,8 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
   }
 
   Widget _buildChemicalItem(ChemicalModel chemical) {
+    final l10n = AppLocalizations.of(context);
+
     _selectedChemicals.putIfAbsent(chemical.id, () => false);
     _chemicalQuantities.putIfAbsent(
       chemical.id,
@@ -595,8 +647,8 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                 controller: _chemicalQuantities[chemical.id],
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
-                  labelText: 'Quantity (${chemical.unit})',
-                  hintText: 'Enter quantity',
+                  labelText: '${l10n.quantity} (${chemical.unit})',
+                  hintText: l10n.enterQuantity,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -612,6 +664,8 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
   }
 
   Widget _buildSubmitButton(ActiveVisitModel activeVisit) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -641,14 +695,14 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                 children: [
                   _buildSummaryItem(
                     Icons.bug_report,
-                    'Pests',
+                    l10n.pests,
                     _controlledPests.length.toString(),
                     AppTheme.success,
                   ),
                   Container(width: 1, height: 30, color: Colors.grey[300]),
                   _buildSummaryItem(
                     Icons.science,
-                    'Chemicals',
+                    l10n.chemicals,
                     _selectedChemicals.values.where((v) => v).length.toString(),
                     AppTheme.secondaryOrange,
                   ),
@@ -673,7 +727,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                       )
                     : const Icon(Icons.send),
                 label: Text(
-                  _isSubmitting ? 'Submitting...' : 'Submit Service Report',
+                  _isSubmitting ? l10n.submitting : l10n.submitReport,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -724,11 +778,13 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
   }
 
   Future<void> _submitReport(ActiveVisitModel activeVisit) async {
+    final l10n = AppLocalizations.of(context);
+
     // Validation
     if (_controlledPests.isEmpty && _selectedChemicals.values.every((v) => !v)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please add at least one pest or chemical'),
+        SnackBar(
+          content: Text(l10n.pleaseAddPestOrChemical),
           backgroundColor: AppTheme.error,
         ),
       );
@@ -745,8 +801,8 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
       final quantity = _chemicalQuantities[chemicalId]?.text.trim() ?? '';
       if (quantity.isEmpty || double.tryParse(quantity) == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please enter valid quantities for all selected chemicals'),
+          SnackBar(
+            content: Text(l10n.pleaseEnterValidQuantities),
             backgroundColor: AppTheme.error,
           ),
         );
@@ -831,10 +887,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Service report submitted successfully!\n'
-              '${_controlledPests.length} pests, ${usedChemicals.length} chemicals logged',
-            ),
+            content: Text(l10n.reportSubmitted),
             backgroundColor: AppTheme.success,
             duration: const Duration(seconds: 3),
           ),
@@ -859,7 +912,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error submitting report: $e'),
+            content: Text('${l10n.errorSubmittingReport}: $e'),
             backgroundColor: AppTheme.error,
           ),
         );

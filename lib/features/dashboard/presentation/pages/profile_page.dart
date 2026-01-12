@@ -5,7 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/models/active_visit_model.dart';
 import '../../../../core/localization/app_localizations.dart';
-import '../../../../core/localization/language_cubit.dart';
+import '../../../../core/widgets/language_switcher.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
@@ -105,30 +105,34 @@ class ProfilePage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 16),
                       ],
                     ),
                   ),
 
-                  // Profile Information Cards
+                  // Profile Content
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Account Information',
-                          style: TextStyle(
+                        // Language Switcher (Moved to top)
+                        Text(
+                          l10n.language,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
+                        const LanguageSwitcher(),
 
-                        // ID Card
+                        const SizedBox(height: 32),
+
+                        // User Info Cards
                         _buildInfoCard(
-                          icon: Icons.badge,
+                          icon: Icons.email,
                           title: 'Supervisor ID',
                           value: supervisor.id,
                           color: AppTheme.primaryGreen,
@@ -152,10 +156,6 @@ class ProfilePage extends StatelessWidget {
                           color: AppTheme.secondaryOrange,
                         ),
 
-                        const SizedBox(height: 32),
-
-                        // Language Switcher
-                        _buildLanguageSwitcher(context),
 
                         const SizedBox(height: 32),
 
@@ -256,171 +256,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildLanguageSwitcher(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.language,
-                  color: AppTheme.primaryGreen,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                l10n.language,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          BlocBuilder<LanguageCubit, Locale>(
-            builder: (context, locale) {
-              final isEnglish = locale.languageCode == 'en';
-
-              return Row(
-                children: [
-                  Expanded(
-                    child: _buildLanguageOption(
-                      context: context,
-                      label: l10n.english,
-                      flag: '🇬🇧',
-                      isSelected: isEnglish,
-                      onTap: () {
-                        context.read<LanguageCubit>().changeLanguage(
-                          const Locale('en', 'US'),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.languageChanged),
-                            backgroundColor: AppTheme.success,
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildLanguageOption(
-                      context: context,
-                      label: l10n.arabic,
-                      flag: '🇸🇦',
-                      isSelected: !isEnglish,
-                      onTap: () {
-                        context.read<LanguageCubit>().changeLanguage(
-                          const Locale('ar', 'SA'),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.languageChanged),
-                            backgroundColor: AppTheme.success,
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLanguageOption({
-    required BuildContext context,
-    required String label,
-    required String flag,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.primaryGreen
-              : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? AppTheme.primaryGreen
-                : Colors.grey.shade300,
-            width: 2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppTheme.primaryGreen.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [],
-        ),
-        child: Column(
-          children: [
-            Text(
-              flag,
-              style: const TextStyle(fontSize: 32),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? Colors.white : AppTheme.textPrimary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if (isSelected) ...[
-              const SizedBox(height: 4),
-              const Icon(
-                Icons.check_circle,
-                color: Colors.white,
-                size: 18,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 
   String _getInitials(String name) {
     final parts = name.split(' ');
