@@ -122,6 +122,11 @@ class AppLocalizations {
   String get selectAtLeastOne => _localizedValues[locale.languageCode]!['select_at_least_one']!;
   String get saveContinue => _localizedValues[locale.languageCode]!['save_continue']!;
   String get noTeamMembers => _localizedValues[locale.languageCode]!['no_team_members']!;
+  String get selectTeamMembersWhoParticipated => _localizedValues[locale.languageCode]!['select_team_members_who_participated']!;
+  String get membersSelected => _localizedValues[locale.languageCode]!['members_selected']!;
+  String get teamMembersSavedSuccessfully => _localizedValues[locale.languageCode]!['team_members_saved_successfully']!;
+  String get somethingWentWrong => _localizedValues[locale.languageCode]!['something_went_wrong']!;
+  String get idLabel => _localizedValues[locale.languageCode]!['id_label']!;
 
   // Profile
   String get language => _localizedValues[locale.languageCode]!['language']!;
@@ -277,6 +282,11 @@ class AppLocalizations {
       'select_at_least_one': 'Please select at least one team member',
       'save_continue': 'Save & Continue',
       'no_team_members': 'No team members available',
+      'select_team_members_who_participated': 'Select team members who participated in this visit',
+      'members_selected': 'member(s) selected',
+      'team_members_saved_successfully': 'Team members saved successfully!',
+      'something_went_wrong': 'Something went wrong',
+      'id_label': 'ID',
 
       // Profile
       'language': 'Language',
@@ -430,6 +440,11 @@ class AppLocalizations {
       'select_at_least_one': 'يرجى اختيار عضو واحد على الأقل',
       'save_continue': 'حفظ ومتابعة',
       'no_team_members': 'لا يوجد أعضاء فريق متاحين',
+      'select_team_members_who_participated': 'اختر أعضاء الفريق الذين شاركوا في هذه الزيارة',
+      'members_selected': 'عضو محدد',
+      'team_members_saved_successfully': 'تم حفظ أعضاء الفريق بنجاح!',
+      'something_went_wrong': 'حدث خطأ ما',
+      'id_label': 'الرقم',
 
       // Profile
       'language': 'اللغة',

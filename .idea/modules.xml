@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/pest_control_task.iml" filepath="$PROJECT_DIR$/pest_control_task.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/pest_control_task_android.iml" filepath="$PROJECT_DIR$/android/pest_control_task_android.iml" />
     </modules>
   </component>
 </project>

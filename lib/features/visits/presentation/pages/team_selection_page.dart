@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/constants/app_constants.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../dashboard/data/models/team_member_model.dart';
 import '../../data/models/visit_model.dart';
 import '../bloc/team_selection_bloc.dart';
 import '../bloc/team_selection_event.dart';
@@ -34,6 +33,8 @@ class _TeamSelectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return BlocConsumer<TeamSelectionBloc, TeamSelectionState>(
       listener: (context, state) {
         if (state is TeamSelectionError) {
@@ -45,8 +46,8 @@ class _TeamSelectionView extends StatelessWidget {
           );
         } else if (state is TeamSelectionSaved) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Team members saved successfully!'),
+            SnackBar(
+              content: Text(l10n.teamMembersSavedSuccessfully),
               backgroundColor: AppTheme.success,
             ),
           );
@@ -57,16 +58,16 @@ class _TeamSelectionView extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Select Team Members'),
+            title: Text(l10n.selectTeamMembers),
             elevation: 0,
           ),
-          body: _buildBody(context, state),
+          body: _buildBody(context, state, l10n),
         );
       },
     );
   }
 
-  Widget _buildBody(BuildContext context, TeamSelectionState state) {
+  Widget _buildBody(BuildContext context, TeamSelectionState state, AppLocalizations l10n) {
     if (state is TeamSelectionLoading || state is TeamSelectionInitial) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -81,16 +82,16 @@ class _TeamSelectionView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Select team members who participated in this visit',
-                  style: TextStyle(
+                Text(
+                  l10n.selectTeamMembersWhoParticipated,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${state.selectedMemberIds.length} member(s) selected',
+                  '${state.selectedMemberIds.length} ${l10n.membersSelected}',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -101,8 +102,8 @@ class _TeamSelectionView extends StatelessWidget {
           ),
           Expanded(
             child: state.teamMembers.isEmpty
-                ? const Center(
-                    child: Text('No team members available'),
+                ? Center(
+                    child: Text(l10n.noTeamMembers),
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
@@ -129,7 +130,7 @@ class _TeamSelectionView extends StatelessWidget {
                             ),
                           ),
                           subtitle: Text(
-                            'ID: ${teamMember.id}',
+                            '${l10n.idLabel}: ${teamMember.id}',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -173,9 +174,9 @@ class _TeamSelectionView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Save & Continue',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.saveContinue,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -188,7 +189,7 @@ class _TeamSelectionView extends StatelessWidget {
       );
     }
 
-    return const Center(child: Text('Something went wrong'));
+    return Center(child: Text(l10n.somethingWentWrong));
   }
 }
 
