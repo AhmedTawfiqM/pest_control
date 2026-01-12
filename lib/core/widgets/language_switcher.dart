@@ -63,7 +63,7 @@ class _LanguageOption extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.primaryGreen : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(12),
@@ -86,14 +86,14 @@ class _LanguageOption extends StatelessWidget {
           children: [
             Text(
               language.flag,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(width: 8),
             Flexible(
               child: Text(
                 language.nativeName,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 11,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   color: isSelected ? Colors.white : AppTheme.textPrimary,
                 ),
