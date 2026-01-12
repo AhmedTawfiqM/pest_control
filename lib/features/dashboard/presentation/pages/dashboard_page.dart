@@ -14,7 +14,6 @@ import '../widgets/end_visit_dialog.dart';
 import 'profile_page.dart';
 import 'visit_history_page.dart';
 import '../../../visits/presentation/pages/visit_setup_page.dart';
-import '../../../visits/presentation/pages/team_selection_page.dart';
 import '../../../service_report/presentation/pages/service_report_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -26,7 +25,64 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _DashboardPageState extends State<DashboardPage> with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late Animation<double> _pulseAnimation;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Pulse animation for the start visit icon
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _pulseAnimation = Tween<double>(begin: 0.9, end: 1.1).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
+    // Fade in animation for cards
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
+    );
+
+    // Slide animation for cards
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+    );
+
+    // Start animations
+    _fadeController.forward();
+    _slideController.forward();
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _fadeController.dispose();
+    _slideController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -58,24 +114,30 @@ class _DashboardPageState extends State<DashboardPage> {
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
                     if (state is AuthAuthenticated) {
-                      return Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Welcome back,',
-                                style: Theme.of(context).textTheme.titleMedium,
+                      return FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: SlideTransition(
+                          position: _slideAnimation,
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Welcome back,',
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  Text(
+                                    state.supervisor.name,
+                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                state.supervisor.name,
-                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       );
@@ -86,14 +148,20 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 24),
 
                 // Visit History Button
-                OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(context, VisitHistoryPage.routeName);
-                  },
-                  icon: const Icon(Icons.history),
-                  label: Text(l10n.visitHistory),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.pushNamed(context, VisitHistoryPage.routeName);
+                      },
+                      icon: const Icon(Icons.history),
+                      label: Text(l10n.visitHistory),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                    ),
                   ),
                 ),
 
@@ -101,11 +169,20 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 // Active Visit or Start Visit Button
                 if (activeVisit != null)
-                  _buildActiveVisitCard(activeVisit)
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: _buildActiveVisitCard(activeVisit),
+                    ),
+                  )
                 else
                   Expanded(
                     child: Center(
-                      child: _buildStartVisitButton(),
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: _buildStartVisitButton(),
+                      ),
                     ),
                   ),
 
@@ -123,16 +200,26 @@ class _DashboardPageState extends State<DashboardPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryGreen.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.add_location_alt,
-            size: 64,
-            color: AppTheme.primaryGreen,
+        ScaleTransition(
+          scale: _pulseAnimation,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryGreen.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primaryGreen.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.add_location_alt,
+              size: 64,
+              color: AppTheme.primaryGreen,
+            ),
           ),
         ),
         const SizedBox(height: 24),
