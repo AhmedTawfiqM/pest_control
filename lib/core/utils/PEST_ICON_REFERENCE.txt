@@ -1,0 +1,70 @@
+/*
+ * PEST ICON HELPER - QUICK REFERENCE
+ * ===================================
+ *
+ * This utility provides rich, context-aware icons for pest types
+ * in the Pest Control Manager application.
+ *
+ * USAGE:
+ * ------
+ *
+ * 1. GET ICON DATA:
+ *    final iconData = PestIconHelper.getPestIcon('Ants');
+ *
+ * 2. GET ICON WIDGET (with custom color):
+ *    final icon = PestIconHelper.getPestIconWidget(
+ *      'Cockroaches',
+ *      color: Colors.orange,
+ *      size: 24,
+ *    );
+ *
+ * 3. GET ICON WITH SEVERITY COLOR (recommended):
+ *    final icon = PestIconHelper.getPestIconWithSeverityColor(
+ *      'Rodents', // Will be RED
+ *      size: 20,
+ *    );
+ *
+ * PEST TYPE MAPPINGS:
+ * -------------------
+ *
+ * Ants        → Icons.pets (🟡 Amber - Lower)
+ * Cockroaches → Icons.bug_report (🟠 Deep Orange - Medium-High)
+ * Flies       → Icons.air (🟡 Amber - Lower)
+ * Rodents     → Icons.cruelty_free (🔴 Red - HIGH SEVERITY)
+ * Termites    → Icons.home_repair_service (🔴 Red - HIGH SEVERITY)
+ * Bedbugs     → Icons.bed (🟠 Deep Orange - Medium-High)
+ * Mosquitoes  → Icons.wind_power (🟠 Orange - Medium)
+ * Spiders     → Icons.hub (🟡 Amber - Lower)
+ * Fleas       → Icons.scatter_plot (🟠 Orange - Medium)
+ * Ticks       → Icons.bubble_chart (🟠 Orange - Medium)
+ *
+ * Unknown     → Icons.bug_report (🟠 Orange - Default)
+ *
+ * SEVERITY LEVELS:
+ * ----------------
+ * 🔴 HIGH (Red)          - Rodents, Termites
+ * 🟠 MEDIUM-HIGH (Deep Orange) - Cockroaches, Bedbugs
+ * 🟠 MEDIUM (Orange)     - Mosquitoes, Fleas, Ticks
+ * 🟡 LOWER (Amber)       - Ants, Flies, Spiders
+ *
+ * FEATURES:
+ * ---------
+ * ✓ Case-insensitive matching
+ * ✓ Automatic severity color coding
+ * ✓ Fallback to default icon
+ * ✓ Consistent across all app views
+ * ✓ Easy to extend with new pests
+ *
+ * WHERE USED:
+ * -----------
+ * • Service Report Page (Available Pests)
+ * • Service Report Page (Controlled Pests)
+ * • Service Report Details Page
+ * • Drag-and-Drop Feedback
+ *
+ * DEMO:
+ * -----
+ * See PestIconDemoPage for visual reference of all pest icons
+ *
+ */
+

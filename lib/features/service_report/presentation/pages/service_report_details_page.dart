@@ -4,6 +4,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_datetime.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/pest_icon_helper.dart';
 import '../../../visits/data/models/visit_model.dart';
 import '../../data/models/service_report_model.dart';
 
@@ -179,7 +180,7 @@ class ServiceReportDetailsPage extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.bug_report, color: Colors.orange, size: 22),
+            const Icon(Icons.pets, color: Colors.orange, size: 22), // Generic pests icon for section header
             const SizedBox(width: 8),
             Text(
               l10n.controlledPests,
@@ -236,10 +237,9 @@ class ServiceReportDetailsPage extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 12),
                             child: Row(
                               children: [
-                                const Icon(
-                                  Icons.check_circle,
+                                PestIconHelper.getPestIconWithSeverityColor(
+                                  pest.pestName,
                                   size: 20,
-                                  color: Colors.orange,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(

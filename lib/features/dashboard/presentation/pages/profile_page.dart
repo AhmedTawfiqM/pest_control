@@ -96,9 +96,9 @@ class ProfilePage extends StatelessWidget {
                             color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Text(
-                            'Field Supervisor',
-                            style: TextStyle(
+                          child: Text(
+                            l10n.fieldSupervisor,
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Colors.white,
                               fontWeight: FontWeight.w500,
@@ -133,7 +133,7 @@ class ProfilePage extends StatelessWidget {
                         // User Info Cards
                         _buildInfoCard(
                           icon: Icons.email,
-                          title: 'Supervisor ID',
+                          title: l10n.supervisorId,
                           value: supervisor.id,
                           color: AppTheme.primaryGreen,
                         ),
@@ -142,7 +142,7 @@ class ProfilePage extends StatelessWidget {
                         // Email Card
                         _buildInfoCard(
                           icon: Icons.email,
-                          title: 'Email Address',
+                          title: l10n.emailAddress,
                           value: supervisor.email,
                           color: AppTheme.info,
                         ),
@@ -151,7 +151,7 @@ class ProfilePage extends StatelessWidget {
                         // Name Card
                         _buildInfoCard(
                           icon: Icons.person,
-                          title: 'Full Name',
+                          title: l10n.fullName,
                           value: supervisor.name,
                           color: AppTheme.secondaryOrange,
                         ),
@@ -160,9 +160,9 @@ class ProfilePage extends StatelessWidget {
                         const SizedBox(height: 32),
 
                         // Statistics Section
-                        const Text(
-                          'Statistics',
-                          style: TextStyle(
+                        Text(
+                          l10n.statistics,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.textPrimary,
@@ -185,7 +185,7 @@ class ProfilePage extends StatelessWidget {
                                     Expanded(
                                       child: _buildStatCard(
                                         icon: Icons.check_circle,
-                                        label: 'Completed Visits',
+                                        label: l10n.completedVisits,
                                         value: completedVisits.toString(),
                                         color: AppTheme.success,
                                       ),
@@ -194,7 +194,7 @@ class ProfilePage extends StatelessWidget {
                                     Expanded(
                                       child: _buildStatCard(
                                         icon: Icons.pending_actions,
-                                        label: 'Active Visits',
+                                        label: l10n.activeVisits,
                                         value: activeVisits.toString(),
                                         color: AppTheme.warning,
                                       ),
@@ -212,7 +212,7 @@ class ProfilePage extends StatelessWidget {
                         _buildActionButton(
                           context,
                           icon: Icons.lock_outline,
-                          label: 'Change Password',
+                          label: l10n.changePassword,
                           onTap: () {
                             _showChangePasswordDialog(context);
                           },
@@ -222,7 +222,7 @@ class ProfilePage extends StatelessWidget {
                         _buildActionButton(
                           context,
                           icon: Icons.info_outline,
-                          label: 'About App',
+                          label: l10n.aboutApp,
                           onTap: () {
                             _showAboutDialog(context);
                           },
@@ -232,7 +232,7 @@ class ProfilePage extends StatelessWidget {
                         _buildActionButton(
                           context,
                           icon: Icons.logout,
-                          label: 'Logout',
+                          label: l10n.logout,
                           onTap: () {
                             _showLogoutDialog(context);
                           },
@@ -248,8 +248,8 @@ class ProfilePage extends StatelessWidget {
             );
           }
 
-          return const Center(
-            child: Text('No user data available'),
+          return Center(
+            child: Text(l10n.noUserData),
           );
         },
       ),
@@ -433,15 +433,17 @@ class ProfilePage extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: Text(l10n.logout),
+        content: Text(l10n.logoutConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -456,7 +458,7 @@ class ProfilePage extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.error,
             ),
-            child: const Text('Logout'),
+            child: Text(l10n.logout),
           ),
         ],
       ),
@@ -464,15 +466,17 @@ class ProfilePage extends StatelessWidget {
   }
 
   void _showChangePasswordDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Change Password'),
-        content: const Text('This feature will be available soon.'),
+        title: Text(l10n.changePassword),
+        content: Text(l10n.featureComingSoon),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
@@ -480,34 +484,33 @@ class ProfilePage extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('About'),
-        content: const Column(
+        title: Text(l10n.about),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Pest Control Manager',
-              style: TextStyle(
+              l10n.appName,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
-            Text('Version 1.0.0'),
-            SizedBox(height: 16),
-            Text(
-              'A mobile application designed for field supervisors '
-              'in pest control operations.',
-            ),
+            const SizedBox(height: 8),
+            Text(l10n.appVersion),
+            const SizedBox(height: 16),
+            Text(l10n.appDescription),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(l10n.ok),
           ),
         ],
       ),

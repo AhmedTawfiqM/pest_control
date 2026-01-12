@@ -5,6 +5,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/models/active_visit_model.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/pest_icon_helper.dart';
 import '../../../visits/data/models/visit_model.dart';
 import '../../data/models/pest_model.dart';
 import '../../data/models/chemical_model.dart';
@@ -246,7 +247,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.bug_report, color: Colors.orange),
+              PestIconHelper.getPestIconWidget(pest.name, color: Colors.orange),
               const SizedBox(width: 8),
               Text(
                 pest.name,
@@ -294,7 +295,7 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
                     color: Colors.orange[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.bug_report, color: Colors.orange, size: 24),
+                  child: PestIconHelper.getPestIconWidget(pest.name, color: Colors.orange, size: 24),
                 ),
                 const SizedBox(width: 12),
 
@@ -462,6 +463,13 @@ class _ServiceReportPageState extends State<ServiceReportPage> with SingleTicker
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
+                // Pest-specific icon
+                PestIconHelper.getPestIconWithSeverityColor(
+                  pest.name,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+
                 // Pest Name - takes most space
                 Expanded(
                   child: Text(

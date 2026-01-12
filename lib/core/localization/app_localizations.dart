@@ -144,6 +144,11 @@ class AppLocalizations {
   String get changePassword => _localizedValues[locale.languageCode]!['change_password']!;
   String get aboutApp => _localizedValues[locale.languageCode]!['about_app']!;
   String get fieldSupervisor => _localizedValues[locale.languageCode]!['field_supervisor']!;
+  String get featureComingSoon => _localizedValues[locale.languageCode]!['feature_coming_soon']!;
+  String get about => _localizedValues[locale.languageCode]!['about']!;
+  String get appVersion => _localizedValues[locale.languageCode]!['app_version']!;
+  String get appDescription => _localizedValues[locale.languageCode]!['app_description']!;
+  String get noUserData => _localizedValues[locale.languageCode]!['no_user_data']!;
 
   // Visit History
   String get totalVisits => _localizedValues[locale.languageCode]!['total_visits']!;
@@ -304,6 +309,11 @@ class AppLocalizations {
       'change_password': 'Change Password',
       'about_app': 'About App',
       'field_supervisor': 'Field Supervisor',
+      'feature_coming_soon': 'This feature will be available soon.',
+      'about': 'About',
+      'app_version': 'Version 1.0.0',
+      'app_description': 'A mobile application designed for field supervisors in pest control operations.',
+      'no_user_data': 'No user data available',
 
       // Visit History
       'total_visits': 'Total Visits',
@@ -462,6 +472,11 @@ class AppLocalizations {
       'change_password': 'تغيير كلمة المرور',
       'about_app': 'حول التطبيق',
       'field_supervisor': 'مشرف ميداني',
+      'feature_coming_soon': 'ستتوفر هذه الميزة قريبًا.',
+      'about': 'حول',
+      'app_version': 'الإصدار 1.0.0',
+      'app_description': 'تطبيق محمول مصمم للمشرفين الميدانيين في عمليات مكافحة الآفات.',
+      'no_user_data': 'لا توجد بيانات المستخدم متاحة',
 
       // Visit History
       'total_visits': 'إجمالي الزيارات',
