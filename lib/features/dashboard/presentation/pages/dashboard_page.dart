@@ -5,6 +5,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/models/active_visit_model.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_datetime.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../visits/data/models/visit_model.dart';
@@ -26,13 +27,15 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Text(l10n.dashboard),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
-            tooltip: 'Profile',
+            tooltip: l10n.profile,
             onPressed: () {
               Navigator.pushNamed(context, ProfilePage.routeName);
             },
@@ -86,7 +89,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     Navigator.pushNamed(context, VisitHistoryPage.routeName);
                   },
                   icon: const Icon(Icons.history),
-                  label: const Text('Visit History'),
+                  label: Text(l10n.visitHistory),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
@@ -113,6 +116,8 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildStartVisitButton() {
+    final l10n = AppLocalizations.of(context);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -134,9 +139,9 @@ class _DashboardPageState extends State<DashboardPage> {
             Navigator.pushNamed(context, VisitSetupPage.routeName);
           },
           icon: const Icon(Icons.play_arrow, size: 28),
-          label: const Text(
-            'Start New Visit',
-            style: TextStyle(fontSize: 18),
+          label: Text(
+            l10n.startNewVisit,
+            style: const TextStyle(fontSize: 18),
           ),
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
@@ -147,6 +152,8 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildActiveVisitCard(ActiveVisitModel activeVisit) {
+    final l10n = AppLocalizations.of(context);
+
     return ValueListenableBuilder(
       valueListenable: Hive.box<VisitModel>(AppConstants.visitBox).listenable(),
       builder: (context, Box<VisitModel> visitBox, _) {
@@ -191,10 +198,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Visit In Progress',
-                          style: TextStyle(
+                          l10n.visitInProgress,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -210,9 +217,9 @@ class _DashboardPageState extends State<DashboardPage> {
                           color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Text(
-                          'ACTIVE',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.active,
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -265,19 +272,19 @@ class _DashboardPageState extends State<DashboardPage> {
                   // Visit Details
                   _buildDetailItem(
                     Icons.business,
-                    'Customer',
+                    l10n.customer,
                     activeVisit.customerName,
                   ),
                   const SizedBox(height: 12),
                   _buildDetailItem(
                     Icons.assignment,
-                    'Project',
+                    l10n.project,
                     activeVisit.projectName,
                   ),
                   const SizedBox(height: 12),
                   _buildDetailItem(
                     Icons.calendar_today,
-                    'Started',
+                    l10n.started,
                     AppDateTime.format(
                       activeVisit.startTimeLocal,
                       AppDateTimeFormat.shortDateTime,
@@ -297,9 +304,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                   Navigator.pushNamed(context, ServiceReportPage.routeName);
                                 },
                                 icon: const Icon(Icons.description, size: 20),
-                                label: const Text(
-                                  'Service Report',
-                                  style: TextStyle(
+                                label: Text(
+                                  l10n.serviceReport,
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -323,9 +330,9 @@ class _DashboardPageState extends State<DashboardPage> {
                             _showEndVisitDialog(context, activeVisit);
                           },
                           icon: const Icon(Icons.stop, size: 20),
-                          label: const Text(
-                            'End Visit',
-                            style: TextStyle(
+                          label: Text(
+                            l10n.endVisit,
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
@@ -352,6 +359,8 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildReportAddedComponent() {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
@@ -375,9 +384,9 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
           const SizedBox(width: 8),
-          const Text(
-            'Report Added',
-            style: TextStyle(
+          Text(
+            l10n.reportAdded,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -426,26 +435,27 @@ class _DashboardPageState extends State<DashboardPage> {
 
 
   void _showEndVisitDialog(BuildContext context, ActiveVisitModel activeVisit) {
+    final l10n = AppLocalizations.of(context);
     final activeVisitBox = Hive.box<ActiveVisitModel>(AppConstants.activeVisitBox);
     final duration = AppDateTime.durationFromNowUtc(activeVisit.startTimeUtc);
 
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: AppTheme.warning),
-            SizedBox(width: 8),
-            Text('End Visit'),
+            const Icon(Icons.warning_amber_rounded, color: AppTheme.warning),
+            const SizedBox(width: 8),
+            Text(l10n.endVisit),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Are you sure you want to end this visit?',
-              style: TextStyle(
+            Text(
+              l10n.endVisitConfirm,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -453,27 +463,27 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 12),
-            _buildSummaryRow('Date', AppDateTime.format(
+            _buildSummaryRow(l10n.date, AppDateTime.format(
               activeVisit.startTimeLocal,
               AppDateTimeFormat.shortDate,
             )),
             const SizedBox(height: 8),
-            _buildSummaryRow('Start Time', AppDateTime.format(
+            _buildSummaryRow(l10n.startTime, AppDateTime.format(
               activeVisit.startTimeLocal,
               AppDateTimeFormat.time12Hour,
             )),
             const SizedBox(height: 8),
-            _buildSummaryRow('Duration', AppDateTime.formatDuration(duration)),
+            _buildSummaryRow(l10n.duration, AppDateTime.formatDuration(duration)),
             const SizedBox(height: 8),
-            _buildSummaryRow('Customer', activeVisit.customerName),
+            _buildSummaryRow(l10n.customer, activeVisit.customerName),
             const SizedBox(height: 8),
-            _buildSummaryRow('Project', activeVisit.projectName),
+            _buildSummaryRow(l10n.project, activeVisit.projectName),
             const SizedBox(height: 12),
             const Divider(),
             const SizedBox(height: 12),
-            const Text(
-              'You will be asked to select team members who participated.',
-              style: TextStyle(
+            Text(
+              l10n.selectTeamMembersMsg,
+              style: const TextStyle(
                 fontSize: 14,
                 fontStyle: FontStyle.italic,
                 color: Colors.grey,
@@ -484,7 +494,7 @@ class _DashboardPageState extends State<DashboardPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -519,8 +529,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Visit ended successfully! Please select team members.'),
+                  SnackBar(
+                    content: Text(l10n.visitEnded),
                     backgroundColor: AppTheme.success,
                   ),
                 );
@@ -536,7 +546,7 @@ class _DashboardPageState extends State<DashboardPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.error,
             ),
-            child: const Text('End Visit'),
+            child: Text(l10n.endVisit),
           ),
         ],
       ),

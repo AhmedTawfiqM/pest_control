@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'core/constants/app_constants.dart';
@@ -7,6 +8,8 @@ import 'core/database/database_service.dart';
 import 'core/di/injection.dart';
 import 'core/theme/app_theme.dart';
 import 'core/models/active_visit_model.dart';
+import 'core/localization/app_localizations.dart';
+import 'core/localization/language_cubit.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
@@ -44,6 +47,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        // Language Cubit
+        BlocProvider(
+          create: (context) => LanguageCubit(),
+        ),
+
         // Auth BLoC
         BlocProvider(
           create: (context) => sl<AuthBloc>()..add(CheckAuthStatusEvent()),
@@ -68,31 +76,43 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ],
-      child: MaterialApp(
-        title: 'Pest Control Manager',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is AuthLoading || state is AuthInitial) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            } else if (state is AuthAuthenticated) {
-              return const DashboardPage();
-            } else {
-              return const LoginPage();
-            }
-          },
-        ),
-        routes: {
-          LoginPage.routeName: (context) => const LoginPage(),
-          RegisterPage.routeName: (context) => const RegisterPage(),
-          DashboardPage.routeName: (context) => const DashboardPage(),
-          ProfilePage.routeName: (context) => const ProfilePage(),
-          VisitSetupPage.routeName: (context) => const VisitSetupPage(),
-          VisitHistoryPage.routeName: (context) => const VisitHistoryPage(),
-          ServiceReportPage.routeName: (context) => const ServiceReportPage(),
+      child: BlocBuilder<LanguageCubit, Locale>(
+        builder: (context, locale) {
+          return MaterialApp(
+            title: 'Pest Control Manager',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            locale: locale,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                if (state is AuthLoading || state is AuthInitial) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                } else if (state is AuthAuthenticated) {
+                  return const DashboardPage();
+                } else {
+                  return const LoginPage();
+                }
+              },
+            ),
+            routes: {
+              LoginPage.routeName: (context) => const LoginPage(),
+              RegisterPage.routeName: (context) => const RegisterPage(),
+              DashboardPage.routeName: (context) => const DashboardPage(),
+              ProfilePage.routeName: (context) => const ProfilePage(),
+              VisitSetupPage.routeName: (context) => const VisitSetupPage(),
+              VisitHistoryPage.routeName: (context) => const VisitHistoryPage(),
+              ServiceReportPage.routeName: (context) => const ServiceReportPage(),
+            },
+          );
         },
       ),
     );
